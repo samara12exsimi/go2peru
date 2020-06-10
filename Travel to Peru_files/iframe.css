@@ -1,0 +1,233 @@
+@charset "utf-8";
+body {
+	margin: 0px;
+	padding: 0px;
+}
+#plantripcontainer {
+	float: left;
+	height: 365px;
+	width: 270px;
+	margin: 0px;
+	padding: 0px;
+}
+#plantripcab {
+	background-image: url(../images/planyourtrip_home.jpg);
+	background-repeat: no-repeat;
+	background-position: left;
+	display: block;
+	float: left;
+	height: 44px;
+	width: 280px;
+}
+#plantripcab2 {
+	background-image: url(../images/planyourtrip_guide%20copy.jpg);
+	background-repeat: no-repeat;
+	background-position: right;
+	display: block;
+	float: left;
+	height: 44px;
+	width: 270px;
+	margin: 0px;
+	padding: 0px;
+}
+#plantripcab h1, #plantripcab2 h1 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	font-weight: normal;
+	color: #FFFFFF;
+	padding-left: 11px;
+	vertical-align: middle;
+	margin: 0px;
+	padding-top: 5px;
+}
+#plantripcab h2,#plantripcab2 h2 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: normal;
+	color: #FFFFFF;
+	padding-top: 0px;
+	padding-right: 0px;
+	padding-bottom: 0px;
+	padding-left: 12px;
+	margin-top: -3px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	margin-left: 0px;
+}
+
+#vacationcontent1 {
+	padding-left: 30px;
+	border-bottom-style: none;
+	height: 280px;
+	border-top-style: none;
+	border-right-style: none;
+	border-left-style: none;
+	display: block;
+	background-image: url(../images/linhor.gif);
+	background-position: left 220px;
+	background-repeat: no-repeat;
+	margin: 0px;
+	padding-top: 0px;
+}
+
+
+#vacationcontent1 h1,#hotelscontent1 h1 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: #bb5910;
+	padding: 0px;
+	margin-top: 10px;
+	margin-bottom: 0px;
+	display: block;
+	float: left;
+	width: 200px;
+	clear: both;
+}
+
+#vacationcontent1 h2, #hotelscontent1 h2 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #595959;
+	padding: 0px;
+	margin-top: 3px;
+	margin-bottom: 0px;
+	font-weight: normal;
+	width: 165px;
+	float: left;
+	display: block;
+	clear: left;
+	margin-right: 0px;
+}
+.formMed {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #333333;
+	margin-bottom: 5px;
+	width: 200px;
+	display: block;
+	float: left;
+	margin-top: 0px;
+	padding-top: 0px;
+}
+.texboxMed {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #333333;
+	width: 150px;
+	float: left;
+}
+
+#vacationcontent1 img {
+	margin-top: 2px;
+	padding-top: 0px;
+	float: right;
+	margin-bottom: 5px;
+	display: block;
+	margin-right: 42px;
+	border-top-style: none;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: none;
+}
+#vacationcontent1 #bot2{
+	margin-top: 8px;
+}
+#hotelscontent1 {
+	padding-left: 30px;
+	border-bottom-style: none;
+	height: 280px;
+	border-top-style: none;
+	border-right-style: none;
+	border-left-style: none;
+	display: block;
+	background-image: url(../images/linhor.gif);
+	background-position: left 130px;
+	background-repeat: no-repeat;
+	margin: 0px;
+}
+#hotelscontent1 #tit2 {
+	margin-top: 0px;
+	clear: both;
+	float: left;
+	padding: 0px;
+	margin-bottom: 0px;
+}
+#hotelscontent1 img {
+	margin-top: 0px;
+	padding-top: 0px;
+	float: right;
+	display: block;
+	border-top-style: none;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: none;
+	margin-bottom: 10px;
+	margin-right: 40px;
+}
+ #hotelscontent1 #bot2{
+	margin-top: 0px;
+	float: left;
+	display: block;
+	border-top-style: none;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: none;
+	margin-bottom: 10px;
+	margin-right: 10px;
+	padding: 0px;
+	clear: none;
+}
+#hotelAd1 {
+	display: block;
+	width: 220px;
+	float: left;
+	margin: 0px;
+	padding: 0px;
+}
+#hotelAd1 h2 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #333333;
+	display: block;
+	padding-top: 0px;
+	padding-right: 5px;
+	padding-bottom: 0px;
+	padding-left: 10px;
+	margin-top: 5px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	margin-left: 0px;
+	text-align: left;
+	background-image: url(../images/bulletorange.gif);
+	background-repeat: no-repeat;
+	background-position: left 4px;
+	width: 200px;
+}
+
+
+#hotelAd1 a:link {
+	color: #333333;
+	text-decoration: none;
+}
+#hotelAd1 a:hover {
+	color: #CC3300 !important;
+	text-decoration: underline !important;
+}
+#hotelAd1 .strong2 {
+	font-size: 12px;
+	color: #CC3300;
+	font-weight: bold;
+}
+
+
+#hotelAd1 img {
+	vertical-align: top;
+	display: block;
+	padding: 0px;
+	margin-top: 10px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	margin-left: 20px;
+	float: left;
+}

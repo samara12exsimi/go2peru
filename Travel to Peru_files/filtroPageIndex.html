@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0014)about:internet -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--<base href="https://www.go2peru.travel/G2PWeb/">--><base href=".">
+
+
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Cache-control" content="no-cache, must-revalidate">
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Expires" content="Thu, 01 Jan 2015 16:00:00 GMT">
+
+<link href="./iframe.css" rel="stylesheet" type="text/css">
+<link href="./SpryTabbedPanels.css" rel="stylesheet" type="text/css">
+<link href="./messages.css" rel="stylesheet" type="text/css">
+
+<script async="" src="./analytics.js.Без названия"></script><script type="text/javascript" src="./jquery-1.4.4.min.3320.js.Без названия"></script>
+<script type="text/javascript" src="./SpryTabbedPanels.js.Без названия"></script>
+<script type="text/javascript" src="./load-imgandwin.js.Без названия"></script>
+<script type="text/javascript" src="./Util.js.Без названия"></script>
+
+<!-- Estilos y Script para el MessageBox -->
+<link href="./msgBoxLight.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="./jquery.msgBox.js.Без названия"></script>
+<!-- Fin Estilos y Script para el MessageBox -->
+
+<script type="text/javascript" src="./googleanalytics.js.Без названия"></script>
+</head>
+<body>
+
+	<div align="center">
+	</div>
+<form id="bodyForm" name="bodyForm" method="post" action="https://www.go2peru.travel/G2PWeb/page/g2p/search/searchIndexPackage.faces" enctype="application/x-www-form-urlencoded" style="display: inline;">
+<input type="hidden" name="bodyForm" value="bodyForm">
+
+<div id="plantripcontainer">
+    <div id="plantripcab">
+      <h1>Plan your trip</h1>
+      <h2><small>Find and book what you need on your trip</small></h2>
+    </div>
+    <div id="TabbedPanels1" class="TabbedPanels">
+      <ul class="TabbedPanelsTabGroup">      
+	        <li class="TabbedPanelsTab TabbedPanelsTabSelected">Vacations</li>
+	        <li class="TabbedPanelsTab"><a href="https://www.go2peru.travel/G2PWeb/page/g2p/filtroPageIndex.faces?type=searchindexhotel&amp;lang=US">Hotels</a></li>
+	        <li class="TabbedPanelsTab"><a href="https://www.go2peru.travel/G2PWeb/page/g2p/filtroPageIndex.faces?type=searchindexflight&amp;lang=US">Flights</a></li>
+	        <li class="TabbedPanelsTab"><a href="https://www.go2peru.travel/G2PWeb/page/g2p/filtroPageIndex.faces?type=searchindextrain&amp;lang=US">Trains</a></li>
+	        <li class="TabbedPanelsTab"><a href="https://www.go2peru.travel/G2PWeb/page/g2p/filtroPageIndex.faces?type=searchindexbus&amp;lang=US">Buses</a></li>
+        
+      </ul>
+      <div class="TabbedPanelsContentGroup">
+      <!--CONTENIDO PACKAGES-->
+        <div class="TabbedPanelsContent">
+          <div id="hotelscontent1"> <!-- id="vacationcontent1" esto se quita para que suba la linea-->
+            <h1>Find a Circuit Tour in Peru </h1>
+            <h2><strong>Choose a Peru destination</strong></h2><br>			
+	 			<!-- <f selectItem itemLabel="{message.textOptionchoosedestination}" itemValue="0"/> --><select id="bodyForm:protargetlocinidlocation" name="bodyForm:protargetlocinidlocation" class="formMed" size="1" onchange="submit()">	<option value="143">Arequipa &amp; Colca</option>
+	<option value="879">Caral</option>
+	<option value="795">Chachapoyas</option>
+	<option value="148">Chiclayo</option>
+	<option value="136">Circuit</option>
+	<option value="149">Cusco &amp; Machu Picchu</option>
+	<option value="18">Huaraz</option>
+	<option value="771">Ica</option>
+	<option value="154">Iquitos</option>
+	<option value="17">Lima</option>
+	<option value="264">Manu</option>
+	<option value="160">Nazca</option>
+	<option value="152">Nazca - Paracas</option>
+	<option value="162">Paracas</option>
+	<option value="156">Puno</option>
+	<option value="167">Tambopata</option>
+</select> 
+            
+            <!-- 
+            <h2><strong><h:outputText value="{message.textChoosecategory}" /></strong></h2><br />
+
+			<h selectOneMenu id="catinidcategory" value="{g2ppackage.catinidcategory}"  valueChangeListener="{g2ppackage.valueChangeListener}"  onchange="submit()" styleClass="formMed">
+				 <f selectItem itemLabel="{message.textAll}" itemValue="0" />
+				 <f selectItems value="{g2ppackage.alistCategory}" />
+			</h selectOneMenu>
+ 			-->
+            
+            <h2><strong>Choose a duration</strong></h2><br><select id="bodyForm:idduration" name="bodyForm:idduration" class="formMed" size="1" onchange="submit()">	<option value="1" selected="selected">All</option>
+	<option value="2">Less than a week</option>
+	<option value="3">one week to two weeks</option>
+	<option value="4">two weeks to three weeks</option>
+	<option value="5">More than three weeks</option>
+</select>
+				
+			<!-- 	
+            <h2><strong><h:outputText value="{message.textChoosebudget}" /></strong> </h2><br />
+
+			<h selectOneMenu id="idpricePackage" value="{g2ppackage.idprice}"   valueChangeListener="{g2ppackage.valueChangeListener}"  onchange="submit()" styleClass="formMed">
+				<f selectItems value="{g2ppackage.alistPrice}" />
+			</h selectOneMenu>
+            -->
+<script type="text/javascript" src="./jsf.js.faces"></script>
+<a id="bodyForm:search" href="https://www.go2peru.travel/G2PWeb/#" ondblclick="javascript: return dblclick();" onclick="mojarra.jsfcljs(document.getElementById(&#39;bodyForm&#39;),{&#39;bodyForm:search&#39;:&#39;bodyForm:search&#39;},&#39;_top&#39;);return false">
+				<img src="./go_off.gif" width="33" height="20" id="Image121" onmouseover="MM_swapImage(&#39;Image121&#39;,&#39;&#39;,&#39;images/go_on.gif&#39;,1)" onmouseout="MM_swapImgRestore()"></a>
+
+			
+
+
+			<!-- 
+              	<br />
+				<br />
+				<br />
+				
+            <h1><h outputText value="{message.textFindanamazingtourinperu}" /></h1>
+            <h2><small><h outputText value="{message.textChooseifyouwantaprogramwithtwoormorecitiesinside}" /></small></h2> 
+			<h commandLink id="searchByCircuit" action="{g2ppackage.searchByCircuit}" immediate="true" target="_top" ondblclick="javascript: return dblclick();">
+				<img src="images/{message.textImageGooff}" width="33" height="20" id="Image222" onmouseover="MM_swapImage('Image222','','images/go_on.gif',1)" onmouseout="MM_swapImgRestore()" />
+			</h commandLink>               
+ 
+  			-->
+ 
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><input type="hidden" name="javax.faces.ViewState" id="javax.faces.ViewState" value="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" autocomplete="off">
+</form>
+
+	<!-- <script type="text/javascript" src="js/googletagmanager.js"></script> -->
+
+
+</body></html>

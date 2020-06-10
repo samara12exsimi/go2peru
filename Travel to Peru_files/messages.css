@@ -1,0 +1,238 @@
+.error1 {
+	display: block;
+	border: 1px dotted #666666;
+	margin-top: 8px;
+	margin-left: auto;
+	height: 22px;
+	width: 953px;
+	margin-right: auto;
+	background-color: #FFFFDF;
+	margin-bottom: 8px;
+	padding-top: 6px;
+	padding-right: 5px;
+	padding-bottom: 6px;
+	background-image: url(../images/exclamation-red-frame-icon.png) !important;
+	background-repeat: no-repeat;
+	background-position: 20px 6px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #990000;
+	text-indent: 50px;
+	padding-left: 0px;
+}
+
+.error1oms {
+	display: block;
+	border: 1px dotted #666666;
+	margin-top: 8px;
+	margin-left: auto;
+	height: 22px;
+	width: 700px;
+	margin-right: auto;
+	background-color: #FFFFDF;
+	margin-bottom: 8px;
+	padding-top: 6px;
+	padding-right: 5px;
+	padding-bottom: 6px;
+	background-image: url(../images/exclamation-red-frame-icon.png) !important;
+	background-repeat: no-repeat;
+	background-position: 20px 6px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #990000;
+	text-indent: 50px;
+	padding-left: 0px;
+}
+
+.error1omsnew {
+	border: 1px dotted #666666;
+	background-color: #FFFFDF;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 20px;
+	color: #990000
+}
+
+.error2 {
+	width: 953px;
+	background-image: none !important;
+	border-top-style: none;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: none;
+	margin: 0px;
+	padding: 0px;
+	color: #990000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	display: block;
+}
+.success {
+	display: block;
+	border: 1px dotted #999999;
+	margin-top: 8px;
+	margin-left: auto;
+	height: 22px;	
+	width: 953px;
+	margin-right: auto;
+	background-color: #FFFFEC;
+	margin-bottom: 8px;
+	padding-top: 6px;
+	padding-right: 5px;
+	padding-bottom: 6px;
+	background-image: url(../images/icon_success.gif) !important;
+	background-repeat: no-repeat;
+	background-position: 20px 6px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #006600;
+	text-indent: 50px;
+	padding-left: 0px;
+}
+
+.successoms {
+	display: block;
+	border: 1px dotted #999999;
+	margin-top: 8px;
+	margin-left: auto;
+	height: 22px;	
+	width: 700px;
+	margin-right: auto;
+	background-color: #FFFFEC;
+	margin-bottom: 8px;
+	padding-top: 6px;
+	padding-right: 5px;
+	padding-bottom: 6px;
+	background-image: url(../images/icon_success.gif) !important;
+	background-repeat: no-repeat;
+	background-position: 20px 6px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #006600;
+	text-indent: 50px;
+	padding-left: 0px;
+}
+
+.successomsnew {
+	border: 1px dotted #999999;
+	background-color: #FFFFEC;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 20px;
+	color: #006600;
+}
+
+
+.errorSearch {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #CC3300;
+	background-color: #FFFFE8;
+	padding: 10px;
+	margin: auto;
+	width: 80%;
+	white-space: normal;
+	display: block;
+	border: 1px solid #999999;
+	text-indent: 20px;
+	text-align: center;
+}
+
+.successSearch {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #006600;
+	background-color: #FFFFE8;
+	padding: 10px;
+	margin: auto;
+	width: 80%;
+	white-space: normal;
+	display: block;
+	border: 1px solid #999999;
+	text-indent: 20px;
+	text-align: center;
+}
+
+
+/* PERSONALIZADOS */
+.titleForMessage {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 15px;
+	font-weight: bold;
+	color: #006699;
+	display: block;
+	margin: 0px;
+	padding-top: 5px;
+	padding-right: 0px;
+	padding-bottom: 5px;
+	padding-left: 0px;
+	text-decoration: none;
+}
+
+.textboxname2 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	width: 170px;
+}
+
+.textboxname3 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	padding-right: 5px;
+	padding-left: 5px;
+	width: 100px;
+}
+
+.texboxnumdoc {
+	width: 80px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+
+.texboxnumdoc2 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	padding-right: 5px;
+	padding-left: 5px;
+	width: 120px;	
+}
+
+
+.minimensaje {
+font-family: Arial, Helvetica, sans-serif;
+font-size: 10px;
+color: #525252;	
+}
+
+
+.w2{ width:2% }
+.w4{ width:4% }
+.w5{ width:5% }
+.w7{ width:7% }
+.w8{ width:8% }
+.w9{ width:9% }
+.w10{ width:10% }
+.w15{ width:15% }
+.w17{ width:17% }
+.w18{ width:18% }
+.w20{ width:20% }
+.w22{ width:22% }
+.w25{ width:25% }
+.w30{ width:30% }
+.w35{ width:35% }
+.w40{ width:40% }
+.w45{ width:45% }
+.w50{ width:50% }
+.w55{ width:55% }
+.w60{ width:60% }
+.w65{ width:65% }
+.w70{ width:70% }
+.w75{ width:75% }
+.w80{ width:80% }
+.w85{ width:85% }
+.w90{ width:90% }
+.w95{ width:95% }
+
+.linkColorWhite {
+      color: #FFFFFF;
+}

@@ -1,0 +1,4179 @@
+function clickLink(id)
+{
+	$('#'+id).click();
+}
+
+/* Funcion que anula el doble click del boton */
+function dblclick()
+{
+	return false;
+}
+
+function ocultarTD(name)
+{
+	document.getElementById(name).style.display = "none";
+}
+
+function mostrarTD(name)
+{
+	var tipo = "table-cell";
+	if(window.ActiveXObject) tipo = "inline";
+	document.getElementById(name).style.display = tipo;
+}
+
+function ShowReserve(idproductsub, prtvcgroup, prschreturn)
+{
+	var createrow = null;
+	for(var i=3; i > 0; i--)
+	{
+		var name = 'idd' + i + idproductsub;
+		var cell = document.getElementById(name).style.display;
+
+		if (cell == 'none') { createrow = i; }
+	}
+
+	mostrarTD('idh' + idproductsub);
+	mostrarTD('idd' + createrow + idproductsub);
+
+	document.getElementById('registryfrom' + createrow + idproductsub).value = '';
+	if (prtvcgroup == '1' || (prtvcgroup == '3' && prschreturn == '1')) {	document.getElementById('registryto' + createrow + idproductsub).value = ''; }
+	document.getElementById('pax' + createrow + idproductsub).options.selectedIndex = 0;
+
+	return;
+}
+
+function DeleteReserve(row, idproductsub, prtvcgroup, prschreturn)
+{
+	document.getElementById('registryfrom' + row + idproductsub).value = '';
+	if (prtvcgroup == 1 || (prtvcgroup == 3 && prschreturn == 1)) { document.getElementById('registryto' + row + idproductsub).value = ''; }
+	document.getElementById('pax' + row + idproductsub).options.selectedIndex = 0;
+
+	ocultarTD('idd' + row + idproductsub);
+
+	var rownone = null;
+	for(var i=1; i < 4; i++)
+	{
+		var cell = document.getElementById('idd' + i + idproductsub).style.display;
+
+		if (cell == 'none')
+		{
+			rownone = i;
+		}
+		else
+		{
+			if (rownone != null)
+			{
+				var dataRegistryFrom = document.getElementById('registryfrom' + i + idproductsub).value;
+				var dataRegistryTo = ''; if (prtvcgroup == 1 || (prtvcgroup == 3 && prschreturn == 1)) { dataRegistryTo = document.getElementById('registryto' + i + idproductsub).value; }
+				var indexPax = document.getElementById('pax' + i + idproductsub).options.selectedIndex;
+
+				ocultarTD('idd' + i + idproductsub);
+				mostrarTD('idd' + rownone + idproductsub);
+
+				document.getElementById('registryfrom' + rownone + idproductsub).value = dataRegistryFrom;
+				if (prtvcgroup == 1 || (prtvcgroup == 3 && prschreturn == 1)) { document.getElementById('registryto' + rownone + idproductsub).value = dataRegistryTo; }
+				document.getElementById('pax' + rownone + idproductsub).options.selectedIndex = indexPax;
+
+				rownone = i;
+			}
+		}
+	}
+
+	var cellproductsub = null;
+	for(var i=1; i < 3; i++)
+	{
+		cellproductsub = document.getElementById('idd' + i + idproductsub).style.display;
+
+		if (cellproductsub != 'none')
+		{
+			return;
+		}
+	}
+
+	if (cellproductsub == 'none')
+	{
+		ocultarTD('idh' + idproductsub);
+	}
+
+	return;
+}
+
+function DeleteReserveNewVersion(row, idproductsub, prtvcgroup, prschreturn)
+{
+	/*ELIMINAR RESERVA(EN REALIDAD ES OCULTAR)*/
+	document.getElementById('registryfrom' + row + idproductsub).value = '';
+	if (prtvcgroup == 1 || (prtvcgroup == 3 && prschreturn == 1)) { document.getElementById('registryto' + row + idproductsub).value = ''; }
+	document.getElementById('pax' + row + idproductsub).options.selectedIndex = 0;
+
+	ocultarTD('idd' + row + idproductsub);
+
+
+	/*VERIFICAR SI SE HA ELIMINADO TODAS LAS RESERVAS,*/
+	/*DE SER ASI OCULTAR LOS DATOS DEL TITULAR DE LA RESERVA*/
+	/*MOSTRAR MENSAJE QUE DEBE RETORNAR AL DETALLE*/
+
+	var idrowprsinidproductsubGroup = document.getElementById('idrowprsinidproductsubGroup').value;
+	var positionInitial = 0;
+	var positionEnd = 0;
+	var countreserve = 0;
+
+	/*REVISAMOS QUE LAS FECHAS SEAN VALIDAS*/
+	do
+	{
+		/*OBTENEMOS EL ID DEL SUBPRODUCTO*/
+		positionEnd = idrowprsinidproductsubGroup.indexOf(',',positionInitial);
+		if (positionEnd == -1) { positionEnd = idrowprsinidproductsubGroup.length; }
+		var idrowprsinidproductsub = idrowprsinidproductsubGroup.substring(positionInitial,positionEnd);
+		positionInitial = positionEnd + 1;
+
+		var name = 'idd' + idrowprsinidproductsub;
+		var cell = document.getElementById(name).style.display;
+
+		if (cell != 'none')
+		{
+			countreserve++;
+		}
+	}
+	while (positionInitial <= idrowprsinidproductsubGroup.length);
+
+	if (countreserve == 0)
+	{
+		ocultarTD('holder');
+		ocultarTD('idsubtotal');
+		mostrarTD('message');
+	}
+
+	return;
+}
+
+function showCombo(row, idproductsub, group, passengermaximum, passengernumber)
+{
+	document.write('<select id="pax' + row + idproductsub + '"  onchange="getSubTotal();">'); //class="texboxNum"
+	var i = 0;
+	var space = "";
+	if (group == 1)
+	{
+		for (i = 1; i <= passengermaximum; i++)
+		{
+			var j = "" + i;
+			if (j.length < 2 )
+			{
+				space = "0";
+			}
+			else
+			{
+				space = "";
+			}
+			document.write('<option value="' + i + '">' + space + i + '</option>');
+		}
+	}
+	else
+	{
+		var maximum = 10;
+		var value = passengernumber;
+
+		do
+		{
+			var j = "" + value;
+			if (j.length < 2 )
+			{
+				space = "0";
+			}
+			else
+			{
+				space = "";
+			}
+
+			document.write('<option value="' + value + '">' + space + value + '</option>');
+			value = value + passengernumber;
+		}
+		while (value <= maximum);
+	}
+	document.write('</select>');
+
+	return;
+}
+
+function showComboNewVersion(row, idproductsub, group, passengermaximum, passengernumber)
+{
+	document.write('<select id="pax' + row + idproductsub + '"  onchange="getSubTotalNewVersion();" class="comboqtyroomsHotel">'); /*class="texboxNum"*/
+	var i = 0;
+	var space = "";
+	if (group == 1)
+	{
+		for (i = 1; i <= passengermaximum; i++)
+		{
+			var j = "" + i;
+			if (j.length < 2 )
+			{
+				space = "0";
+			}
+			else
+			{
+				space = "";
+			}
+			document.write('<option value="' + i + '">' + space + i + '</option>');
+		}
+	}
+	else
+	{
+		var maximum = 10;
+		var value = passengernumber;
+
+		do
+		{
+			var j = "" + value;
+			if (j.length < 2 )
+			{
+				space = "0";
+			}
+			else
+			{
+				space = "";
+			}
+
+			document.write('<option value="' + value + '">' + space + value + '</option>');
+			value = value + passengernumber;
+		}
+		while (value <= maximum);
+	}
+	document.write('</select>');
+
+	return;
+}
+
+function packageshowComboNewVersion(idproductsub, appearance, passengernumber, textSelectqty)
+{
+	document.write('<select id="pax' + idproductsub + '" class="comboqtyrooms">'); //class="texboxNum" class="comboqtyroomsHotel"
+	document.write('<option value="0">' + textSelectqty + '</option>');
+	var i = 0;
+	var space = "";
+
+	if (appearance == 3)
+	{
+		/*VALOR FIJO*/
+		i = passengernumber;
+		var j = "" + i;
+		if (j.length < 2 )
+		{
+			space = "0";
+		}
+		else
+		{
+			space = "";
+		}
+		document.write('<option value="' + i + '">' + space + i + '</option>');
+	}
+	else
+	{
+		/*VALOR MULTIPLE*/
+		var maximum = 15;
+		var value = passengernumber;
+
+		do
+		{
+			var j = "" + value;
+			if (j.length < 2 )
+			{
+				space = "0";
+			}
+			else
+			{
+				space = "";
+			}
+
+			document.write('<option value="' + value + '">' + space + value + '</option>');
+			value = value + passengernumber;
+		}
+		while (value <= maximum);
+	}
+	document.write('</select>');
+
+	return;
+}
+
+function packageshowComboNewVersion2(row, idproductsub, appearance, passengernumber, paxselected)
+{
+	document.write('<select id="pax' + row + idproductsub + '" onchange="getSubTotalNewVersion();" class="comboqtyroomsHotel">'); /*class="texboxNum" class="comboqtyroomsHotel"*/
+	var i = 0;
+	var space = "";
+	var selected = "";
+
+	if (appearance == 3)
+	{
+		/*VALOR FIJO*/
+		i = passengernumber;
+		var j = "" + i;
+		if (j.length < 2 )
+		{
+			space = "0";
+		}
+		else
+		{
+			space = "";
+		}
+
+		if (passengernumber == paxselected)
+		{
+			selected = "SELECTED";
+		}
+		else
+		{
+			selected = "";
+		}
+
+		document.write('<option value="' + i + '" ' + selected + '>' + space + i + '</option>');
+	}
+	else
+	{
+		/*VALOR MULTIPLE*/
+		var maximum = 15;
+		var value = passengernumber;
+
+		do
+		{
+			var j = "" + value;
+			if (j.length < 2 )
+			{
+				space = "0";
+			}
+			else
+			{
+				space = "";
+			}
+
+			if (value == paxselected)
+			{
+				selected = "SELECTED";
+			}
+			else
+			{
+				selected = "";
+			}
+
+			document.write('<option value="' + value + '" ' + selected + '>' + space + value + '</option>');
+			value = value + passengernumber;
+		}
+		while (value <= maximum);
+	}
+	document.write('</select>');
+
+	return;
+}
+
+function cartshowComboNewVersion(row, idproductsub, group, appearance, passengermaximum, passengernumber)
+{
+	document.write('<select id="pax' + row + idproductsub + '" disabled="disabled" onchange="cartgetSubTotalNewVersion();" style="border:0;" class="dtosInterno">'); /*class="texboxNum"*/
+	var i = 0;
+	var space = "";
+
+	if (group == 1)
+	{
+		/*SI PERTENECE AL GRUPO HOTEL*/
+		for (i = 1; i <= passengermaximum; i++)
+		{
+			var j = "" + i;
+			if (j.length < 2 )
+			{
+				space = "0";
+			}
+			else
+			{
+				space = "";
+			}
+			document.write('<option value="' + i + '">' + space + i + '</option>');
+		}
+	}
+	else if (group == 3)
+	{
+		/*SI PERTENECE AL GRUPO TICKET*/
+		var maximum = 10;
+		var value = passengernumber;
+
+		do
+		{
+			var j = "" + value;
+			if (j.length < 2 )
+			{
+				space = "0";
+			}
+			else
+			{
+				space = "";
+			}
+
+			document.write('<option value="' + value + '">' + space + value + '</option>');
+			value = value + passengernumber;
+		}
+		while (value <= maximum);
+	}
+	else
+	{	/*(group == 2)*/
+		/*SI PERTENECE AL GRUPO PAQUETES*/
+
+		if (appearance == 3)
+		{
+			/*VALOR FIJO*/
+			i = passengernumber;
+			var j = "" + i;
+			if (j.length < 2 )
+			{
+				space = "0";
+			}
+			else
+			{
+				space = "";
+			}
+			document.write('<option value="' + i + '">' + space + i + '</option>');
+		}
+		else
+		{
+			/*VALOR MULTIPLE*/
+			var maximum = 15;
+			var value = passengernumber;
+
+			do
+			{
+				var j = "" + value;
+				if (j.length < 2 )
+				{
+					space = "0";
+				}
+				else
+				{
+					space = "";
+				}
+
+				document.write('<option value="' + value + '">' + space + value + '</option>');
+				value = value + passengernumber;
+			}
+			while (value <= maximum);
+		}
+	}
+	document.write('</select>');
+
+	return;
+}
+
+function drawColorRow(type, setRow)
+{
+	/*TYPE=1 ---> ABRIR FILA  ---> TR*/
+	/*TYPE=2 ---> CERRAR FILA ---> /TR*/
+	/*SETROW ---> SIRVE PARA IDENTIFICAR SI ES LA ULTIMA RESERVA DE LA FILA DEL DETACHECRITERIA*/
+	/*				= 0  NO ES ULTIMA*/
+	/*				= 1  ES ULTIMA*/
+
+	if (type == 2)
+	{
+		document.write('</tr>');
+
+		if (setRow == 1)
+		{
+			var countRow = parseInt(document.getElementById('countRow').value);
+			countRow = countRow + 1;
+			document.getElementById('countRow').value = countRow;
+		}
+
+		return;
+	}
+
+	var countRow = parseInt(document.getElementById('countRow').value);
+
+	if (countRow % 2 == 0)
+	{
+		document.write('<tr>'); /*	class="odd" */
+	}
+	else
+	{
+		document.write('<tr>');
+	}
+
+	if (setRow == 1)
+	{
+		countRow = countRow + 1;
+		document.getElementById('countRow').value = countRow;
+	}
+}
+
+function drawHeader(typeGroup, typeReturn, textcheckindate, textcheckoutdate, textbegindate, textdeparturedate, textreturndate, textpax)
+{
+			document.write('<table width="100%" border="1" cellpadding="0" cellspacing="0">');
+			document.write('<tr>');
+
+			if (typeGroup == 1)
+			{
+				/*HOTEL*/
+				document.write('<th align="center" width="125px">' + textcheckindate  + '</th>');
+				document.write('<th align="center" width="125px">' + textcheckoutdate + '</th>');
+				document.write('<th align="center" width="49px">' + textpax + '</th>');
+				document.write('<th align="center" width="20px">&#160;</th>');
+			}
+			else if (typeGroup == 2)
+			{
+				/*PAQUETE*/
+				document.write('<th colspan="2" align="center" width="131px">' + textbegindate + '</th>');
+				document.write('<th align="center" width="49px">' + textpax + '</th>');
+				document.write('<th align="center" width="20px">&#160;</th>');
+			}
+			else if (typeGroup == 3)
+			{
+				/*TICKET*/
+				if (typeReturn == 1)
+				{
+					/*IDA Y VUELTA*/
+					document.write('<th align="center" width="125px">' + textdeparturedate + '</th>');
+					document.write('<th align="center" width="125px">' + textreturndate + '</th>');
+				}
+				else
+				{
+					/*IDA*/
+					document.write('<th colspan="2" align="center" width="131px">' + textdeparturedate + '</th>');
+				}
+				document.write('<th align="center" width="49px">' + textpax + '</th>');
+				document.write('<th align="center" width="20px">&#160;</th>');
+			}
+			document.write('</tr>');
+			document.write('</table>');
+
+	  return;
+}
+
+function drawDate(id, prsinidproductsub, typeGroup, typeReturn)
+{
+	document.write('<table width="100%" border="0">');  /*class="noborder"*/
+	document.write('<tr>');
+
+	if (typeGroup == 1)
+	{	/*PARA EL CASO DE HOTELES*/
+
+		document.write('<td align="right" valign="top" style="border:0;">');
+		document.write('<input id="registryfrom'    + id + prsinidproductsub + '" maxlength="10" size="10" class="textboxdate" onfocus="this.blur();" onchange="verifyDate(1); getSubTotal();" />');
+		document.write('<img   id="imgregistryfrom' + id + prsinidproductsub + '" src="images/calendar3.gif" width="16" height="15" class="margin0" />');
+		document.write('</td>');
+		document.write('<td align="right" valign="top" style="border:0;">');
+		document.write('<input id="registryto'      + id + prsinidproductsub + '" maxlength="10" size="10" class="textboxdate" onfocus="this.blur();" onchange="verifyDate(2); getSubTotal();" />');
+		document.write('<img   id="imgregistryto'   + id + prsinidproductsub + '" src="images/calendar3.gif" width="16" height="15" class="margin0" />');
+		document.write('</td>');
+	}
+	else
+	{
+		/*PARA EL CASO QUE NO SEA HOTELES*/
+
+		if (typeGroup == 3 && typeReturn == 1)
+		{
+			/*PARA EL CASO DE TICKET(IDA Y VUELTA)*/
+			document.write('<td align="right" valign="top" style="border:0;">');
+			document.write('<input id="registryfrom'    + id + prsinidproductsub + '" maxlength="10" size="10" class="textboxdate" onfocus="this.blur();" onchange="verifyDate(1); getSubTotal();" />');
+			document.write('<img   id="imgregistryfrom' + id + prsinidproductsub + '" src="images/calendar3.gif" width="16" height="15" class="margin0" />');
+			document.write('</td>');
+			document.write('<td align="right" valign="top" style="border:0;">');
+			document.write('<input id="registryto'      + id + prsinidproductsub + '" maxlength="10" size="10" class="textboxdate" onfocus="this.blur();" onchange="verifyDate(2); getSubTotal();" />');
+			document.write('<img   id="imgregistryto'   + id + prsinidproductsub + '" src="images/calendar3.gif" width="16" height="15" class="margin0" />');
+			document.write('</td>');
+		}
+		else
+		{
+			/*PAQUETES O TICKETS(IDA)*/
+			document.write('<td align="right" valign="top" style="border:0;">');
+			document.write('<input id="registryfrom'    + id + prsinidproductsub + '" maxlength="10" size="10"  class="textboxdate" onfocus="this.blur();" onchange="getSubTotal();" />');
+			document.write('<img   id="imgregistryfrom' + id + prsinidproductsub + '" src="images/calendar3.gif" width="16" height="15" class="margin0" />');
+			document.write('</td>');
+		}
+	}
+
+	document.write('</tr>');
+	document.write('</table>');
+
+	return;
+}
+
+function drawDateNewVersion(id, prsinidproductsub, typeGroup, typeReturn)
+{
+	document.write('<table width="100%" border="0">');  /*class="noborder"*/
+	document.write('<tr>');
+
+	if (typeGroup == 1)
+	{	/*PARA EL CASO DE HOTELES*/
+
+		document.write('<td align="left" valign="top" style="border:0;">');
+		document.write('<input id="registryfrom'    + id + prsinidproductsub + '" maxlength="10" size="10"  onfocus="this.blur();" onchange="verifyDateNewVersion(1); getSubTotalNewVersion();" class="texboxchico2input" />'); /*class="texboxchico2input"*/
+		document.write('<img   id="imgregistryfrom' + id + prsinidproductsub + '" src="images/calendar3.gif" width="16" height="15" class="margin0" />');
+		document.write('</td>');
+		document.write('<td align="left" valign="top" style="border:0;">');
+		document.write('<input id="registryto'      + id + prsinidproductsub + '" maxlength="10" size="10"  onfocus="this.blur();" onchange="verifyDateNewVersion(2); getSubTotalNewVersion();" class="texboxchico2input" />'); /*class="texboxchico2input"*/
+		document.write('<img   id="imgregistryto'   + id + prsinidproductsub + '" src="images/calendar3.gif" width="16" height="15" class="margin0" />');
+		document.write('</td>');
+	}
+	else
+	{
+		/*PARA EL CASO QUE NO SEA HOTELES*/
+
+		if (typeGroup == 3 && typeReturn == 1)
+		{
+			/*PARA EL CASO DE TICKET(IDA Y VUELTA)*/
+			document.write('<td align="left" valign="top" style="border:0;">');
+			document.write('<input id="registryfrom'    + id + prsinidproductsub + '" maxlength="10" size="10"  onfocus="this.blur();" onchange="verifyDateNewVersion(1); getSubTotalNewVersion();" class="texboxchico2input" />'); /*class="texboxchico2input"*/
+			document.write('<img   id="imgregistryfrom' + id + prsinidproductsub + '" src="images/calendar3.gif" width="16" height="15" class="margin0" />');
+			document.write('</td>');
+			document.write('<td align="left" valign="top" style="border:0;">');
+			document.write('<input id="registryto'      + id + prsinidproductsub + '" maxlength="10" size="10"  onfocus="this.blur();" onchange="verifyDateNewVersion(2); getSubTotalNewVersion();" class="texboxchico2input" />'); /*class="texboxchico2input"*/
+			document.write('<img   id="imgregistryto'   + id + prsinidproductsub + '" src="images/calendar3.gif" width="16" height="15" class="margin0" />');
+			document.write('</td>');
+		}
+		else
+		{
+			/*PAQUETES O TICKETS(IDA)*/
+			document.write('<td align="left" valign="top" style="border:0;">');
+			document.write('<input id="registryfrom'    + id + prsinidproductsub + '" maxlength="10" size="10"   onfocus="this.blur();" onchange="getSubTotalNewVersion();" class="texboxchico2input" />'); /*class="texboxchico2input"*/
+			document.write('<img   id="imgregistryfrom' + id + prsinidproductsub + '" src="images/calendar3.gif" width="16" height="15" class="margin0" />');
+			document.write('</td>');
+		}
+	}
+
+	document.write('</tr>');
+	document.write('</table>');
+
+	return;
+}
+
+function cartdrawDateNewVersion(id, prsinidproductsub, typeGroup, typeReturn)
+{
+	if (typeGroup == 1)
+	{
+		/*PARA EL CASO DE HOTELES*/
+		document.write('<table width="100%" border="0">');  /*class="noborder"*/
+		document.write('<tr>');
+		document.write('<td align="left" valign="top" style="border:0; text-align:left;">');
+		document.write('<input id="registryfrom'    + id + prsinidproductsub + '" readonly="readonly" style="border:0;"  maxlength="10" size="10" onfocus="this.blur();" onchange="cartverifyDateNewVersion(1); cartgetSubTotalNewVersion();" class="texboxchico2" />'); /*class="textboxdate"*/
+		document.write('<img   id="imgregistryfrom' + id + prsinidproductsub + '" style="border:0; display:none; visibility:hidden;" src="images/calendar3.gif" width="16" height="15" class="margin0" />');
+		document.write('</td>');
+		document.write('</tr>');
+		document.write('<tr>');
+		document.write('<td align="left" valign="top" style="border:0; text-align:left;">');
+		document.write('<input id="registryto'      + id + prsinidproductsub + '" readonly="readonly" style="border:0;" maxlength="10" size="10" onfocus="this.blur();" onchange="cartverifyDateNewVersion(2); cartgetSubTotalNewVersion();" class="texboxchico2" />'); /*class="textboxdate"*/
+		document.write('<img   id="imgregistryto'   + id + prsinidproductsub + '" style="border:0; display:none; visibility:hidden;" src="images/calendar3.gif" width="16" height="15" class="margin0" />');
+		document.write('</td>');
+		document.write('</tr>');
+		document.write('</table>');
+	}
+	else
+	{
+		/*PARA EL CASO QUE NO SEA HOTELES*/
+
+		if (typeGroup == 3 && typeReturn == 1)
+		{
+			/*PARA EL CASO DE TICKET(IDA Y VUELTA)*/
+			document.write('<table width="100%" border="0">');  /*class="noborder"*/
+			document.write('<tr>');
+			document.write('<td align="left" valign="top" style="border:0; text-align:left;">');
+			document.write('<input id="registryfrom'    + id + prsinidproductsub + '" readonly="readonly" style="border:0;" maxlength="10" size="10" onfocus="this.blur();" onchange="cartverifyDateNewVersion(1); cartgetSubTotalNewVersion();" class="texboxchico2" />'); /*class="textboxdate"*/
+			document.write('<img   id="imgregistryfrom' + id + prsinidproductsub + '" style="border:0; display:none; visibility:hidden;" src="images/calendar3.gif" width="16" height="15" class="margin0" />');
+			document.write('</td>');
+			document.write('</tr>');
+			document.write('<tr>');
+			document.write('<td align="left" valign="top" style="border:0; text-align:left;">');
+			document.write('<input id="registryto'      + id + prsinidproductsub + '" readonly="readonly" style="border:0;" maxlength="10" size="10" onfocus="this.blur();" onchange="cartverifyDateNewVersion(2); cartgetSubTotalNewVersion();" class="texboxchico2" />'); /*class="textboxdate"*/
+			document.write('<img   id="imgregistryto'   + id + prsinidproductsub + '" style="border:0; display:none; visibility:hidden;" src="images/calendar3.gif" width="16" height="15" class="margin0" />');
+			document.write('</td>');
+			document.write('</tr>');
+			document.write('</table>');
+		}
+		else
+		{
+			/*PAQUETES O TICKETS(IDA)*/
+			document.write('<table width="100%" border="0">');  /*class="noborder"*/
+			document.write('<tr>');
+			document.write('<td align="left" valign="top" style="border:0; text-align:left;">');
+			document.write('<input id="registryfrom'    + id + prsinidproductsub + '" readonly="readonly" style="border:0;" maxlength="10" size="10" onfocus="this.blur();" onchange="cartgetSubTotalNewVersion();" class="texboxchico2" />'); /*class="textboxdate"*/
+			document.write('<img   id="imgregistryfrom' + id + prsinidproductsub + '" style="border:0; display:none; visibility:hidden;" src="images/calendar3.gif" width="16" height="15" class="margin0" />');
+			document.write('</td>');
+			document.write('</tr>');
+			document.write('</table>');
+		}
+	}
+
+
+	return;
+}
+
+function AddReserve(textcheckindateshouldnotbegreaterthancheckoutdate, textdeparturedateshouldnotbegreaterthanreturndate)
+{
+	var prsinidproductsubGroup = document.getElementById('prsinidproductsubGroup').value;
+	var positionInitial = 0;
+	var positionEnd = 0;
+	var addCart	= "";
+
+	/*REVISAMOS QUE LAS FECHAS SEAN VALIDAS*/
+	do
+	{
+		/*OBTENEMOS EL ID DEL SUBPRODUCTO*/
+		positionEnd = prsinidproductsubGroup.indexOf(',',positionInitial);
+		if (positionEnd == -1) { positionEnd = prsinidproductsubGroup.length; }
+		var prsinidproductsub = prsinidproductsubGroup.substring(positionInitial,positionEnd);
+		positionInitial = positionEnd + 1;
+
+		/*REVISAR SI HA INGRESADO UNA RESERVA PARA ESE ID DEL SUBPRODUCTO*/
+		for(var i=1; i <= 3; i++)
+		{
+			var name = 'idd' + i + prsinidproductsub;
+			var cell = document.getElementById(name).style.display;
+
+			if (cell != 'none')
+			{
+				var prtvcgroup = document.getElementById('prtvcgroup' + prsinidproductsub).value;
+				var prschreturn = document.getElementById('prschreturn' + prsinidproductsub).value;
+
+				if (prtvcgroup == 1 || (prtvcgroup == 3 && prschreturn == 1))
+				{
+					/*HOTEL O TICKET(IDA Y VUELTA)*/
+					var dataRegistryFrom = document.getElementById('registryfrom' + i + prsinidproductsub).value;
+					var dataRegistryTo = document.getElementById('registryto' + i + prsinidproductsub).value;
+
+					if (dataRegistryFrom != null && dataRegistryFrom != "" && dataRegistryTo != null && dataRegistryTo != "")
+					{
+						var sRegistryFrom = "" + dataRegistryFrom.substring(6,10) + dataRegistryFrom.substring(3,5) + dataRegistryFrom.substring(0,2);
+						var sRegistryTo = "" + dataRegistryTo.substring(6,10) + dataRegistryTo.substring(3,5) + dataRegistryTo.substring(0,2);
+
+						var nRegistryFrom = parseInt(sRegistryFrom,10);
+						var nRegistryTo = parseInt(sRegistryTo,10);
+
+						if (prtvcgroup == 1 && ((nRegistryFrom > nRegistryTo) || (nRegistryFrom == nRegistryTo)))
+						{	/*HOTEL*/
+							alert(textcheckindateshouldnotbegreaterthancheckoutdate);
+							return;								
+						}
+						else if ((prtvcgroup == 3 && prschreturn == 1) && (nRegistryFrom > nRegistryTo))
+						{	/*TICKET(IDA Y VUELTA)*/
+							alert(textdeparturedateshouldnotbegreaterthanreturndate);
+							return;
+						}
+					}
+				}
+			}
+		}
+	}
+	while (positionInitial <= prsinidproductsubGroup.length);
+
+	positionInitial = 0;
+	positionEnd = 0;
+
+	/*PROCEDEMOS A AGREGAR*/
+	do
+	{
+		/*OBTENEMOS EL ID DEL SUBPRODUCTO*/
+		positionEnd = prsinidproductsubGroup.indexOf(',',positionInitial);
+		if (positionEnd == -1) { positionEnd = prsinidproductsubGroup.length; }
+		var prsinidproductsub = prsinidproductsubGroup.substring(positionInitial,positionEnd);
+		positionInitial = positionEnd + 1;
+
+		/*REVISAR SI HA INGRESADO UNA RESERVA PARA ESE ID DEL SUBPRODUCTO*/
+		for(var i=1; i <= 3; i++)
+		{
+			var name = 'idd' + i + prsinidproductsub;
+			var cell = document.getElementById(name).style.display;
+
+			if (cell != 'none')
+			{
+				var prtvcgroup = document.getElementById('prtvcgroup' + prsinidproductsub).value;
+				var prschreturn = document.getElementById('prschreturn' + prsinidproductsub).value;
+				var proinidproduct = document.getElementById('proinidproduct' + prsinidproductsub).value;
+				var chainidchannel = document.getElementById('chainidchannel' + prsinidproductsub).value;
+				var dataRegistryFrom = document.getElementById('registryfrom' + i + prsinidproductsub).value;
+				var indexPax = document.getElementById('pax' + i + prsinidproductsub).options.selectedIndex;
+				var valuePax = document.getElementById('pax' + i + prsinidproductsub).options[indexPax].value;
+				var dataRegistryTo = "";
+
+				if (prtvcgroup == 1 || (prtvcgroup == 3 && prschreturn == 1))
+				{
+					/*HOTEL Y TICKET(IDA Y VUELTA)*/
+					dataRegistryTo = document.getElementById('registryto' + i + prsinidproductsub).value;
+				}
+
+				if    ((prtvcgroup == 1 || (prtvcgroup == 3 && prschreturn == 1)) && dataRegistryFrom != null && dataRegistryFrom != "" && dataRegistryTo != null && dataRegistryTo != "" && valuePax != null && valuePax != "")
+				{	/*HOTEL O TICKET(IDA Y VUELTA)*/
+					addCart = addCart + chainidchannel + "," + proinidproduct + "," + prsinidproductsub + "," + prtvcgroup + "," + prschreturn + "," + dataRegistryFrom + "," + dataRegistryTo + "," + valuePax + ";";
+				}
+				else if(prtvcgroup != 1 && prschreturn != 1 && prschreturn != 1 && dataRegistryFrom != null && dataRegistryFrom != "" && valuePax != null && valuePax != "")
+				{
+					/*PAQUETE O TICKET(IDA)*/
+					addCart = addCart + chainidchannel + "," + proinidproduct + "," + prsinidproductsub + "," + prtvcgroup + "," + prschreturn + "," + dataRegistryFrom + "," + dataRegistryTo + "," + valuePax + ";";
+				}
+			}
+		}
+	}
+	while (positionInitial <= prsinidproductsubGroup.length);
+
+	document.getElementById('bodyForm:prsinidproductsubAdd').value = addCart;
+	document.getElementById('bodyForm:linkAddReserve').click();
+}
+
+function AddReserveNewVersion(vcidlanguage, ispin, textcheckindateshouldnotbegreaterthancheckoutdate, textdeparturedateshouldnotbegreaterthanreturndate)
+{
+	var idrowprsinidproductsubGroup = document.getElementById('idrowprsinidproductsubGroup').value;
+	var positionInitial = 0;
+	var positionEnd = 0;
+	var addCart	= "";
+	var errorAddCart = false;
+
+	/*REVISAMOS QUE LAS FECHAS SEAN VALIDAS*/
+	do
+	{
+		/*OBTENEMOS EL ID DEL SUBPRODUCTO*/
+		positionEnd = idrowprsinidproductsubGroup.indexOf(',',positionInitial);
+		if (positionEnd == -1) { positionEnd = idrowprsinidproductsubGroup.length; }
+		var idrowprsinidproductsub = idrowprsinidproductsubGroup.substring(positionInitial,positionEnd);
+		positionInitial = positionEnd + 1;
+
+		/*REVISAR SI HA INGRESADO UNA RESERVA PARA ESE ID DEL SUBPRODUCTO*/
+		/*for(var i=1; i <= 3; i++)*/
+		/*{*/
+			var name = 'idd' + idrowprsinidproductsub;
+			var cell = document.getElementById(name).style.display;
+
+			if (cell != 'none')
+			{
+				var prtvcgroup = document.getElementById('prtvcgroup' + idrowprsinidproductsub).value;
+				var prschreturn = document.getElementById('prschreturn' + idrowprsinidproductsub).value;
+
+				if (prtvcgroup == 1 || (prtvcgroup == 3 && prschreturn == 1))
+				{
+					/*HOTEL O TICKET(IDA Y VUELTA)*/
+					removeStyle('registryfrom' + idrowprsinidproductsub);
+					removeStyle('registryto' + idrowprsinidproductsub);
+
+					var dataRegistryFrom = document.getElementById('registryfrom' + idrowprsinidproductsub).value;
+					var dataRegistryTo = document.getElementById('registryto' + idrowprsinidproductsub).value;
+
+					if (dataRegistryFrom != null && dataRegistryFrom != "" && dataRegistryTo != null && dataRegistryTo != "")
+					{
+						var sRegistryFrom = "" + dataRegistryFrom.substring(6,10) + dataRegistryFrom.substring(3,5) + dataRegistryFrom.substring(0,2);
+						var sRegistryTo = "" + dataRegistryTo.substring(6,10) + dataRegistryTo.substring(3,5) + dataRegistryTo.substring(0,2);
+
+						var nRegistryFrom = parseInt(sRegistryFrom,10);
+						var nRegistryTo = parseInt(sRegistryTo,10);
+
+						if (prtvcgroup == 1 && ((nRegistryFrom > nRegistryTo) || (nRegistryFrom == nRegistryTo)))
+						{	/*HOTEL*/
+							setErrorStyle('registryfrom' + idrowprsinidproductsub);
+							showMessage(((vcidlanguage != null && vcidlanguage == 'ES') ? 'Mensaje' : 'Message'), textcheckindateshouldnotbegreaterthancheckoutdate + ".");
+							return; 
+						}
+						else if ((prtvcgroup == 3 && prschreturn == 1) && (nRegistryFrom > nRegistryTo))
+						{	/*TICKET(IDA Y VUELTA)*/
+							setErrorStyle('registryfrom' + idrowprsinidproductsub);
+							showMessage(((vcidlanguage != null && vcidlanguage == 'ES') ? 'Mensaje' : 'Message'), textdeparturedateshouldnotbegreaterthanreturndate + ".");
+							return; 										
+						}
+					}
+				}
+			}
+		/*}*/
+	}
+	while (positionInitial <= idrowprsinidproductsubGroup.length);
+
+	positionInitial = 0;
+	positionEnd = 0;
+	errorAddCart = false;
+
+	/*PROCEDEMOS A AGREGAR*/
+	do
+	{
+		/*OBTENEMOS EL ID DEL SUBPRODUCTO*/
+		positionEnd = idrowprsinidproductsubGroup.indexOf(',',positionInitial);
+		if (positionEnd == -1) { positionEnd = idrowprsinidproductsubGroup.length; }
+		var idrowprsinidproductsub = idrowprsinidproductsubGroup.substring(positionInitial,positionEnd);
+		positionInitial = positionEnd + 1;
+
+		/*REVISAR SI HA INGRESADO UNA RESERVA PARA ESE ID DEL SUBPRODUCTO*/
+		/*for(var i=1; i <= 3; i++)*/
+		/*{*/
+			var name = 'idd' + idrowprsinidproductsub;
+			var cell = document.getElementById(name).style.display;
+
+			if (cell != 'none')
+			{
+				removeStyle('registryfrom' + idrowprsinidproductsub);
+				var prtvcgroup = document.getElementById('prtvcgroup' + idrowprsinidproductsub).value;
+				var prschreturn = document.getElementById('prschreturn' + idrowprsinidproductsub).value;
+				var proinidproduct = document.getElementById('proinidproduct' + idrowprsinidproductsub).value;
+				var prsinidproductsub = document.getElementById('prsinidproductsub' + idrowprsinidproductsub).value;
+				var chainidchannel = document.getElementById('chainidchannel' + idrowprsinidproductsub).value;
+				var dataRegistryFrom = document.getElementById('registryfrom' + idrowprsinidproductsub).value;
+				var indexPax = document.getElementById('pax' + idrowprsinidproductsub).options.selectedIndex;
+				var valuePax = document.getElementById('pax' + idrowprsinidproductsub).options[indexPax].value;
+				var dataRegistryTo = "";
+
+				if(dataRegistryFrom == null || dataRegistryFrom == "")
+				{
+					setErrorStyle('registryfrom' + idrowprsinidproductsub);
+					errorAddCart = true;
+				}
+
+				if (prtvcgroup == 1 || (prtvcgroup == 3 && prschreturn == 1))
+				{
+					/*HOTEL Y TICKET(IDA Y VUELTA)*/
+					removeStyle('registryto' + idrowprsinidproductsub);
+					dataRegistryTo = document.getElementById('registryto' + idrowprsinidproductsub).value;
+
+					if(dataRegistryTo == null || dataRegistryTo == "")
+					{
+						setErrorStyle('registryto' + idrowprsinidproductsub);
+						errorAddCart = true;
+					}
+				}
+
+				if 	   (errorAddCart == false && (prtvcgroup == 1 || (prtvcgroup == 3 && prschreturn == 1)) && dataRegistryFrom != null && dataRegistryFrom != "" && dataRegistryTo != null && dataRegistryTo != "" && valuePax != null && valuePax != "")
+				{	/*HOTEL O TICKET(IDA Y VUELTA)*/
+					addCart = addCart + chainidchannel + "," + proinidproduct + "," + prsinidproductsub + "," + prtvcgroup + "," + prschreturn + "," + dataRegistryFrom + "," + dataRegistryTo + "," + valuePax + ";";
+				}
+				else if(errorAddCart == false && prtvcgroup != 1 && prschreturn != 1 && prschreturn != 1 && dataRegistryFrom != null && dataRegistryFrom != "" && valuePax != null && valuePax != "")
+				{
+					/*PAQUETE O TICKET(IDA)*/
+					addCart = addCart + chainidchannel + "," + proinidproduct + "," + prsinidproductsub + "," + prtvcgroup + "," + prschreturn + "," + dataRegistryFrom + "," + dataRegistryTo + "," + valuePax + ";";
+				}
+			}
+		/*}*/
+	}
+	while (positionInitial <= idrowprsinidproductsubGroup.length);
+
+	if (ispin == '0') { removeStyle('codealphanumeric2'); }
+	removeStyle('bodyForm:vcholdername');
+	removeStyle('bodyForm:vcholderlastname');
+	removeStyle('bodyForm:vcholderemail');
+	removeStyle('bodyForm:vcholderemailconfirm');
+	removeStyle('bodyForm:vcspecialrequest');
+
+	/*REVISAR QUE HAYA LLENADO LOS DATOS DEL TITULAR DE LA RESERVA*/
+	var codealphanumeric = "";
+	var codealphanumeric2 = "";
+	if (ispin == '0')
+	{
+		codealphanumeric = eliminarEspaciosCostados(document.getElementById('codealphanumeric').value);
+		codealphanumeric2 = eliminarEspaciosCostados(document.getElementById('codealphanumeric2').value);
+	}
+	var vcholdername = eliminarEspaciosCostados(document.getElementById('bodyForm:vcholdername').value);
+	var vcholderlastname = eliminarEspaciosCostados(document.getElementById('bodyForm:vcholderlastname').value);
+	var vcholderemail = eliminarEspaciosCostados(document.getElementById('bodyForm:vcholderemail').value);
+	var vcholderemailconfirm = eliminarEspaciosCostados(document.getElementById('bodyForm:vcholderemailconfirm').value);
+	var vcspecialrequest = eliminarEspaciosCostados(document.getElementById('bodyForm:vcspecialrequest').value);
+	var messageerror = "";
+	var quantityerror = 0;
+
+	if (errorAddCart == true || addCart == null || addCart == "")
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar las fechas en que las que desear realizar las reservas." + "<br/>"; } else { messageerror += "You must enter the dates that you want to make the booking." + "<br/>"; }
+		quantityerror++;
+	}
+	if (ispin == '0' && (codealphanumeric2 == null || codealphanumeric2 == "") && (vcholderemail != "prueba@prueba.com" && vcholderemailconfirm != "prueba@prueba.com"))
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar el texto." + "<br/>"; } else { messageerror += "Text is required." + "<br/>"; }
+		setErrorStyle('codealphanumeric2');
+		quantityerror++;
+	}
+	if (ispin == '0' && (codealphanumeric != null && codealphanumeric2 != null && codealphanumeric.toUpperCase() != codealphanumeric2.toUpperCase()) && (vcholderemail != "prueba@prueba.com" && vcholderemailconfirm != "prueba@prueba.com"))
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "El texto no es igual al texto de la imagen." + "<br/>"; } else { messageerror += "Text is not equal to the image text." + "<br/>"; }
+		setErrorStyle('codealphanumeric2');
+		quantityerror++;
+	}
+
+	if (vcholdername == null || vcholdername == "")
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar el nombre." + "<br/>"; } else { messageerror += "First name is required." + "<br/>"; }
+		setErrorStyle('bodyForm:vcholdername');
+		quantityerror++;
+	}
+	if (vcholderlastname == null || vcholderlastname == "")
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar el apellido." + "<br/>"; } else { messageerror += "Last name is required." + "<br/>"; }
+		setErrorStyle('bodyForm:vcholderlastname');
+		quantityerror++;
+	}
+	if (vcholderemail == null || vcholderemail == "")
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar el e-mail." + "<br/>"; } else { messageerror += "E-mail is required." + "<br/>"; }
+		setErrorStyle('bodyForm:vcholderemail');
+		quantityerror++;
+	}
+	if (!(validateEmail(vcholderemail)))
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "El e-mail no tiene un formato correcto." + "<br/>"; } else { messageerror += "E-mail doesn't have a correct format." + "<br/>"; }
+		setErrorStyle('bodyForm:vcholderemail');
+		quantityerror++;
+	}
+	if (vcholderemailconfirm == null || vcholderemailconfirm == "")
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar la confirmaci&#243;n del e-mail." + "<br/>"; } else { messageerror += "Confirm e-mail is required." + "<br/>"; }
+		setErrorStyle('bodyForm:vcholderemailconfirm');
+		quantityerror++;
+	}
+	if (!(validateEmail(vcholderemailconfirm)))
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "La confirmaci&#243;n del e-mail no tiene un formato correcto." + "<br/>"; } else { messageerror += "Confirm e-mail doesn't have a correct format." + "<br/>"; }
+		setErrorStyle('bodyForm:vcholderemailconfirm');
+		quantityerror++;
+	}
+	if (vcholderemailconfirm != vcholderemail)
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "La confirmaci&#243;n del e-mail debe ser igual al e-mail." + "<br/>"; } else { messageerror += "Confirm e-mail and e-mail must be equals." + "<br/>"; }
+		setErrorStyle('bodyForm:vcholderemail');
+		setErrorStyle('bodyForm:vcholderemailconfirm');
+		quantityerror++;
+	}
+	if (vcspecialrequest != null && vcspecialrequest.length > 250)
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "La solicitud especial no debe tener m&#225;s de 250 caracteres."; } else { messageerror += "Special request must not be greater than 250 caracters." + "<br/>"; }
+		setErrorStyle('bodyForm:vcspecialrequest');
+		quantityerror++;
+	}
+
+
+	if (messageerror.length > 1)
+	{
+		if (quantityerror < 5)
+		{
+			showMessage(((vcidlanguage != null && vcidlanguage == 'ES') ? 'Mensaje' : 'Message'), messageerror);
+		}
+		else
+		{
+			messageerror = ((vcidlanguage != null && vcidlanguage == 'ES') ? 'Debe completar los datos solicitados.' : 'You must complete the information requested.');
+			showMessage(((vcidlanguage != null && vcidlanguage == 'ES') ? 'Mensaje' : 'Message'), messageerror);
+		}
+		return;
+	}
+
+	document.getElementById('bodyForm:vcholdername').value = vcholdername;
+	document.getElementById('bodyForm:vcholderlastname').value = vcholderlastname;
+	document.getElementById('bodyForm:vcholderemail').value = vcholderemail;
+	document.getElementById('bodyForm:vcholderemailconfirm').value = vcholderemailconfirm;
+	document.getElementById('bodyForm:vcspecialrequest').value = vcspecialrequest;
+	document.getElementById('bodyForm:prsinidproductsubAdd').value = addCart;
+	document.getElementById('bodyForm:linkAddReserve').click();
+}
+
+function deleteCart()
+{
+	var idGroup = document.getElementById('idGroup').value;
+	var positionInitial = 0;
+	var positionEnd = 0;
+	var deleteCart = "";
+
+	do
+	{
+		/*OBTENEMOS EL ID DEL CARRITO DE COMPRAS*/
+		positionEnd = idGroup.indexOf(',',positionInitial);
+		if (positionEnd == -1) { positionEnd = idGroup.length; }
+		var id = idGroup.substring(positionInitial,positionEnd);
+		positionInitial = positionEnd + 1;
+
+		/*REVISAR SI HA SELECCIONADO DICHO ITEM*/
+		if (document.getElementById('id' + id).checked == true)
+		{
+			if (deleteCart != null && deleteCart != "")
+			{
+				deleteCart = deleteCart + ",";
+			}
+			deleteCart = deleteCart + id;
+		}
+	}
+	while (positionInitial <= idGroup.length);
+
+	document.getElementById('bodyForm:idDeleteCart').value = deleteCart;
+	document.getElementById('bodyForm:linkDeleteCart').click();
+}
+
+function deleteCartNewVersion(vcidlanguage, textSelectthereserveyouwanttodelete)
+{
+	var idGroup = document.getElementById('idGroup').value;
+	var positionInitial = 0;
+	var positionEnd = 0;
+	var deleteCart = "";
+
+	do
+	{
+		/*OBTENEMOS EL ID DEL CARRITO DE COMPRAS*/
+		positionEnd = idGroup.indexOf(',',positionInitial);
+		if (positionEnd == -1) { positionEnd = idGroup.length; }
+		var id = idGroup.substring(positionInitial,positionEnd);
+		positionInitial = positionEnd + 1;
+
+		/*REVISAR SI HA SELECCIONADO DICHO ITEM*/
+		if (document.getElementById('id' + id).checked == true)
+		{
+			if (deleteCart != null && deleteCart != "")
+			{
+				deleteCart = deleteCart + ",";
+			}
+			deleteCart = deleteCart + id;
+		}
+	}
+	while (positionInitial <= idGroup.length);
+
+	if (deleteCart == null || deleteCart == "")
+	{	
+		showMessage(((vcidlanguage != null && vcidlanguage == 'ES') ? 'Mensaje' : 'Message'), textSelectthereserveyouwanttodelete);
+		return;
+	}
+
+	document.getElementById('bodyForm:idDeleteCart').value = deleteCart;
+	document.getElementById('bodyForm:linkDeleteCart').click();
+}
+
+/* OMS */
+function registerCardHolder(vcidlanguage)
+{
+	var messageerror = "";
+	var quantityerror = 0;
+
+	removeStyle('bodyForm:vcname');
+	removeStyle('bodyForm:vclastname');
+	removeStyle3('bodyForm:insex', '100px');
+	removeStyle3('bodyForm:inage', '100px');
+	removeStyle3('bodyForm:iniddoctype', '100px');
+	removeStyle('bodyForm:vcdocnum');
+	removeStyle('bodyForm:vcbillingaddress');
+	removeStyle('bodyForm:vcbillingcity');
+	removeStyle('bodyForm:vcbillingstate');
+	removeStyle('bodyForm:vcbillingzipcode');
+	removeStyle3('bodyForm:inidlocationbillingcountry', '147px');
+	removeStyle('bodyForm:vcphone1');
+	removeStyle('bodyForm:vcemail1');
+	removeStyle('bodyForm:vcemail2');
+
+	var vcname = eliminarEspaciosCostados(document.getElementById('bodyForm:vcname').value);
+	var vclastname = eliminarEspaciosCostados(document.getElementById('bodyForm:vclastname').value);
+	var indexinsex = document.getElementById('bodyForm:insex').options.selectedIndex;
+	var indexinage = document.getElementById('bodyForm:inage').options.selectedIndex;
+	var indexiniddoctype = document.getElementById('bodyForm:iniddoctype').options.selectedIndex;
+	var vcdocnum = eliminarEspaciosCostados(document.getElementById('bodyForm:vcdocnum').value);
+	var vcbillingaddress = eliminarEspaciosCostados(document.getElementById('bodyForm:vcbillingaddress').value);
+	var vcbillingcity = eliminarEspaciosCostados(document.getElementById('bodyForm:vcbillingcity').value);
+	var vcbillingstate = eliminarEspaciosCostados(document.getElementById('bodyForm:vcbillingstate').value);
+	var vcbillingzipcode = eliminarEspaciosCostados(document.getElementById('bodyForm:vcbillingzipcode').value);
+	var indexinidlocationbillingcountry = document.getElementById('bodyForm:inidlocationbillingcountry').options.selectedIndex;
+	var vcphone1 = eliminarEspaciosCostados(document.getElementById('bodyForm:vcphone1').value);
+	var vcemail1 = eliminarEspaciosCostados(document.getElementById('bodyForm:vcemail1').value);
+	var vcemail2 = eliminarEspaciosCostados(document.getElementById('bodyForm:vcemail2').value);
+
+	/*REVISAR DATOS OBLIGATORIOS*/
+	if (vcname == null || vcname == "")
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar el nombre." + "<br/>"; } else { messageerror += "First name is required." + "<br/>"; }
+		setErrorStyle('bodyForm:vcname');
+		quantityerror++;
+	}
+	if (vclastname == null || vclastname == "")
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') 	{ messageerror += "Debe ingresar el apellido." + "<br/>"; } else { messageerror += "Last name is required." + "<br/>"; }
+		setErrorStyle('bodyForm:vclastname');
+		quantityerror++;
+	}
+	if (indexinsex == null || indexinsex == 0)
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe seleccionar un sexo." + "<br/>"; } else { messageerror += "Sex is required." + "<br/>"; }
+		setErrorStyle3('bodyForm:insex', '100px');
+		quantityerror++;
+	}
+	if (indexinage == null || indexinage == 0)
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe seleccionar una edad." + "<br/>"; } else { messageerror += "Age is required." + "<br/>"; }
+		setErrorStyle3('bodyForm:inage', '100px');
+		quantityerror++;
+	}
+	if (indexiniddoctype == null || indexiniddoctype == 0)
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe seleccionar un tipo de documento." + "<br/>"; } else { messageerror += "Type of document is required." + "<br/>"; }
+		setErrorStyle3('bodyForm:iniddoctype', '100px');
+		quantityerror++;
+	}
+	if (vcdocnum == null || vcdocnum == "")
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar un n&#250;mero de documento." + "<br/>"; } else { messageerror += "Number of document is required." + "<br/>"; }
+		setErrorStyle('bodyForm:vcdocnum');
+		quantityerror++;
+	}
+	if (vcbillingaddress == null || vcbillingaddress == "")
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar una direcci&#243;n." + "<br/>"; } else { messageerror += "Address is required." + "<br/>"; }
+		setErrorStyle('bodyForm:vcbillingaddress');
+		quantityerror++;
+	}
+	if (vcbillingcity == null || vcbillingcity == "")
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar una ciudad." + "<br/>"; } else { messageerror += "City is required." + "<br/>"; }
+		setErrorStyle('bodyForm:vcbillingcity');
+		quantityerror++;
+	}
+	if (vcbillingstate == null || vcbillingstate == "")
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar un estado." + "<br/>"; } else { messageerror += "State is required." + "<br/>"; }
+		setErrorStyle('bodyForm:vcbillingstate');
+		quantityerror++;
+	}
+	if (vcbillingzipcode == null || vcbillingzipcode == "")
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar un c&#243;digo postal." + "<br/>"; } else { messageerror += "Zip code is required." + "<br/>"; }
+		setErrorStyle('bodyForm:vcbillingzipcode');
+		quantityerror++;
+	}
+	if (indexinidlocationbillingcountry == null || indexinidlocationbillingcountry == 0)
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe seleccionar un pa&#237;s." + "<br/>"; } else { messageerror += "Country is requiered." + "<br/>"; }
+		setErrorStyle3('bodyForm:inidlocationbillingcountry', '147px');
+		quantityerror++;
+	}
+	if (vcphone1 == null || vcphone1 == "")
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar un n&#250;mero de tel&#233;fono." + "<br/>"; } else { messageerror += "Number of phone is required." + "<br/>"; }
+		setErrorStyle('bodyForm:vcphone1');
+		quantityerror++;
+	}
+	if (vcemail1 == null || vcemail1 == "")
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar un e-mail." + "<br/>"; } else { messageerror += "Email is required." + "<br/>"; }
+		setErrorStyle('bodyForm:vcemail1');
+		quantityerror++;
+	}
+	if (!(validateEmail(vcemail1)))
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "El e-mail no tiene un formato correcto." + "<br/>"; } else { messageerror += "E-mail doesn't have a correct format." + "<br/>"; }
+		setErrorStyle('bodyForm:vcemail1');
+		quantityerror++;
+	}
+	if (vcemail2 != null && vcemail2 != "")
+	{
+		if (!(validateEmail(vcemail2)))
+		{
+			if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "El e-mail alternativo no tiene un formato correcto." + "<br/>"; } else { messageerror += "Alternative E-mail doesn't have a correct format." + "<br/>"; }
+			setErrorStyle('bodyForm:vcemail2');
+			quantityerror++;
+		}
+	}
+
+	if (messageerror.length > 1)
+	{
+		if (quantityerror < 5)
+		{
+			showMessage(((vcidlanguage != null && vcidlanguage == 'ES') ? 'Mensaje' : 'Message'), messageerror);
+		}
+		else
+		{
+			messageerror = ((vcidlanguage != null && vcidlanguage == 'ES') ? 'Debe completar los datos solicitados.' : 'You must complete the information requested.');
+			showMessage(((vcidlanguage != null && vcidlanguage == 'ES') ? 'Mensaje' : 'Message'), messageerror);
+		}
+		return;
+	}
+
+	document.getElementById('bodyForm:linkRegisterCardHolder').click();
+}
+/*EXT y OMS*/
+function registerPaymentType(vcidlanguage)
+{
+	var messageerror = "";
+	var cardselected = 0;	
+	
+	var patinidpaymenttypeGroup = document.getElementById('patinidpaymenttypeGroup').value;
+	var positionInitial = 0;
+	var positionEnd = 0;
+
+	do
+	{
+		/*OBTENEMOS EL ID SELECCIONADO*/
+		positionEnd = patinidpaymenttypeGroup.indexOf(',',positionInitial);
+		if (positionEnd == -1) { positionEnd = patinidpaymenttypeGroup.length; }
+		var patinidpaymenttype = patinidpaymenttypeGroup.substring(positionInitial,positionEnd);
+		positionInitial = positionEnd + 1;
+
+		/*REVISAR SI HA SELECCIONADO DICHO ITEM*/
+		if (document.getElementById('id' + patinidpaymenttype).checked == true)
+		{
+			document.getElementById('bodyForm:patinidpaymenttype').value = patinidpaymenttype;
+			cardselected = 1;
+			break;
+		}
+	}
+	while (positionInitial <= patinidpaymenttypeGroup.length);
+
+	if (cardselected == 0)
+	{
+		messageerror = ((vcidlanguage != null && vcidlanguage == 'ES') ? 'Debe seleccionar un tipo de pago.' : 'Type of payment is required.');
+		showMessage(((vcidlanguage != null && vcidlanguage == 'ES') ? 'Mensaje' : 'Message'), messageerror);
+		return;
+	}
+	
+	$.msgBox({
+		title: getMessage('title', vcidlanguage),
+		content: getMessage('gotopayment', vcidlanguage),
+		type: "info",
+		opacity: 0.7,
+		buttons: [{ value: "OK" }],
+		success: function (result) 
+				 {
+					if (result == "OK") 
+					{
+						document.getElementById('bodyForm:linkRegisterPaymentType').click();
+					}
+				 }
+		});	
+}
+
+function setValueToPax(idproductsub, pax)
+{
+	var z = document.getElementById('pax' + idproductsub).options.length;
+
+	for (var i=0; i < z; i++)
+	{
+		if (document.getElementById('pax' + idproductsub).options[i].value == pax)
+		{
+			document.getElementById('pax' + idproductsub).options.selectedIndex = i;
+		}
+	}
+}
+
+var amountAuthorization;
+var lastChstate;
+function checkStateReserve()
+{
+	var index = document.getElementById("bodyForm:chstate").options.selectedIndex;
+	var state = document.getElementById("bodyForm:chstate").options[index].value;
+
+	if (state == '3' || state == '9' )
+	{	/*estado autorizado o cambiado*/
+		document.getElementById("bodyForm:vcamountauthorization").disabled = false;
+
+		/*amountAuthorization es variable global que ha sido llenado la primera vez en la pagina html*/
+		document.getElementById("bodyForm:vcamountauthorization").value = amountAuthorization;
+	}
+	else
+	{
+		if (lastChstate == '3' || lastChstate == '9' )
+		{
+			/*amountAuthorization es variable global*/
+			amountAuthorization = document.getElementById("bodyForm:vcamountauthorization").value;
+		}
+
+		document.getElementById("bodyForm:vcamountauthorization").disabled = true;
+		document.getElementById("bodyForm:vcamountauthorization").value = "0.00";
+	}
+
+	/*optionChstate es varibale global que ha sido llenado la primera vez en la pagina html*/
+    lastChstate = state;
+}
+
+function getDaysBetweenDates(beginYYYYMMDD, endYYYYMMDD)
+{
+	var dateBegin = new Date(parseInt(beginYYYYMMDD.substring(0,4),10),parseInt(beginYYYYMMDD.substring(4,6),10) - 1,parseInt(beginYYYYMMDD.substring(6,8),10));
+	var dateEnd = new Date(parseInt(endYYYYMMDD.substring(0,4),10),parseInt(endYYYYMMDD.substring(4,6),10) - 1,parseInt(endYYYYMMDD.substring(6,8),10));
+	var diasDif = dateEnd.getTime() - dateBegin.getTime();
+	var dias = Math.round(diasDif/(1000 * 60 * 60 * 24));
+	return dias;
+}
+
+function getSubTotal()
+{
+	var prsinidproductsubGroup = document.getElementById('prsinidproductsubGroup').value;
+	var positionInitial = 0;
+	var positionEnd = 0;
+	/*var addCart = "";*/
+	var subtotal = 0.00;
+
+	/*REVISAMOS QUE LAS FECHAS SEAN VALIDAS*/
+	do
+	{
+		/*OBTENEMOS EL ID DEL SUBPRODUCTO*/
+		positionEnd = prsinidproductsubGroup.indexOf(',',positionInitial);
+		if (positionEnd == -1) { positionEnd = prsinidproductsubGroup.length; }
+		var prsinidproductsub = prsinidproductsubGroup.substring(positionInitial,positionEnd);
+		positionInitial = positionEnd + 1;
+
+		/*REVISAR SI HA INGRESADO UNA RESERVA PARA ESE ID DEL SUBPRODUCTO*/
+		for(var i=1; i <= 3; i++)
+		{
+			var name = 'idd' + i + prsinidproductsub;
+			var cell = document.getElementById(name).style.display;
+
+			if (cell != 'none')
+			{
+				var prtvcgroup = document.getElementById('prtvcgroup' + prsinidproductsub).value;
+
+				if (prtvcgroup == 1)
+				{
+					var dataRegistryFrom = document.getElementById('registryfrom' + i + prsinidproductsub).value;
+					var dataRegistryTo = document.getElementById('registryto' + i + prsinidproductsub).value;
+
+					if (dataRegistryFrom != null && dataRegistryFrom != "" && dataRegistryTo != null && dataRegistryTo != "")
+					{
+						var sRegistryFrom = "" + dataRegistryFrom.substring(6,10) + dataRegistryFrom.substring(3,5) + dataRegistryFrom.substring(0,2);
+						var sRegistryTo = "" + dataRegistryTo.substring(6,10) + dataRegistryTo.substring(3,5) + dataRegistryTo.substring(0,2);
+
+						var nRegistryFrom = parseInt(sRegistryFrom,10);
+						var nRegistryTo = parseInt(sRegistryTo,10);
+
+						if ((nRegistryFrom > nRegistryTo) || (nRegistryFrom == nRegistryTo))
+						{
+
+							return;
+						}
+					}
+				}
+			}
+		}
+	}
+	while (positionInitial <= prsinidproductsubGroup.length);
+
+	positionInitial = 0;
+	positionEnd = 0;
+
+	/*PROCEDEMOS A OBTENER EL TOTAL*/
+	do
+	{
+		/*OBTENEMOS EL ID DEL SUBPRODUCTO*/
+		positionEnd = prsinidproductsubGroup.indexOf(',',positionInitial);
+		if (positionEnd == -1) { positionEnd = prsinidproductsubGroup.length; }
+		var prsinidproductsub = prsinidproductsubGroup.substring(positionInitial,positionEnd);
+		positionInitial = positionEnd + 1;
+
+		var amount = document.getElementById('prschavcamount2' + prsinidproductsub).value;
+		var nAmount = parseFloat(amount);
+
+		/*REVISAR SI HA INGRESADO UNA RESERVA PARA ESE ID DEL SUBPRODUCTO*/
+		for(var i=1; i <= 3; i++)
+		{
+			var name = 'idd' + i + prsinidproductsub;
+			var cell = document.getElementById(name).style.display;
+
+			if (cell != 'none')
+			{
+				var prtvcgroup = document.getElementById('prtvcgroup' + prsinidproductsub).value;
+				/*var proinidproduct = document.getElementById('proinidproduct' + prsinidproductsub).value;*/
+				/*var chainidchannel = document.getElementById('chainidchannel' + prsinidproductsub).value;*/
+				var dataRegistryFrom = document.getElementById('registryfrom' + i + prsinidproductsub).value;
+				var indexPax = document.getElementById('pax' + i + prsinidproductsub).options.selectedIndex;
+				var valuePax = document.getElementById('pax' + i + prsinidproductsub).options[indexPax].value;
+				var dataRegistryTo = "";
+
+				if (prtvcgroup == 1)
+				{
+					dataRegistryTo = document.getElementById('registryto' + i + prsinidproductsub).value;
+				}
+
+				if (prtvcgroup == 1 && dataRegistryFrom != null && dataRegistryFrom != "" && dataRegistryTo != null && dataRegistryTo != "" && valuePax != null && valuePax != "")
+				{
+					var sRegistryFrom = "" + dataRegistryFrom.substring(6,10) + dataRegistryFrom.substring(3,5) + dataRegistryFrom.substring(0,2);
+					var sRegistryTo = "" + dataRegistryTo.substring(6,10) + dataRegistryTo.substring(3,5) + dataRegistryTo.substring(0,2);
+
+					subtotal = subtotal + (nAmount * (getDaysBetweenDates(sRegistryFrom, sRegistryTo)));
+					/* + 1*/
+				}
+				else if(prtvcgroup != 1 && dataRegistryFrom != null && dataRegistryFrom != "" && valuePax != null && valuePax != "")
+				{
+					subtotal = subtotal + (nAmount * valuePax);
+				}
+			}
+		}
+	}
+	while (positionInitial <= prsinidproductsubGroup.length);
+
+	document.getElementById('subtotal').value = subtotal.toFixed(2);
+}
+
+function getSubTotalNewVersion()
+{
+	var idrowprsinidproductsubGroup = document.getElementById('idrowprsinidproductsubGroup').value;
+	var positionInitial = 0;
+	var positionEnd = 0;
+	/*var addCart = "";*/
+	var subtotal = 0.00;
+
+	/*REVISAMOS QUE LAS FECHAS SEAN VALIDAS*/
+	do
+	{
+		/*OBTENEMOS EL ID DEL SUBPRODUCTO*/
+		positionEnd = idrowprsinidproductsubGroup.indexOf(',',positionInitial);
+		if (positionEnd == -1) { positionEnd = idrowprsinidproductsubGroup.length; }
+		var idrowprsinidproductsub = idrowprsinidproductsubGroup.substring(positionInitial,positionEnd);
+		positionInitial = positionEnd + 1;
+
+		/*REVISAR SI HA INGRESADO UNA RESERVA PARA ESE ID DEL SUBPRODUCTO*/
+		/*for(var i=1; i <= 3; i++)*/
+		/*{*/
+			var name = 'idd' + idrowprsinidproductsub;
+			var cell = document.getElementById(name).style.display;
+
+			if (cell != 'none')
+			{
+				var prtvcgroup = document.getElementById('prtvcgroup' + idrowprsinidproductsub).value;
+
+				if (prtvcgroup == 1)
+				{
+					var dataRegistryFrom = document.getElementById('registryfrom' + idrowprsinidproductsub).value;
+					var dataRegistryTo = document.getElementById('registryto' + idrowprsinidproductsub).value;
+
+					if (dataRegistryFrom != null && dataRegistryFrom != "" && dataRegistryTo != null && dataRegistryTo != "")
+					{
+						var sRegistryFrom = "" + dataRegistryFrom.substring(6,10) + dataRegistryFrom.substring(3,5) + dataRegistryFrom.substring(0,2);
+						var sRegistryTo = "" + dataRegistryTo.substring(6,10) + dataRegistryTo.substring(3,5) + dataRegistryTo.substring(0,2);
+
+						var nRegistryFrom = parseInt(sRegistryFrom,10);
+						var nRegistryTo = parseInt(sRegistryTo,10);
+
+						if ((nRegistryFrom > nRegistryTo) || (nRegistryFrom == nRegistryTo))
+						{
+
+							return;
+						}
+					}
+				}
+			}
+		/*}*/
+	}
+	while (positionInitial <= idrowprsinidproductsubGroup.length);
+
+	positionInitial = 0;
+	positionEnd = 0;
+
+	/*PROCEDEMOS A OBTENER EL TOTAL*/
+	do
+	{
+		/*OBTENEMOS EL ID DEL SUBPRODUCTO*/
+		positionEnd = idrowprsinidproductsubGroup.indexOf(',',positionInitial);
+		if (positionEnd == -1) { positionEnd = idrowprsinidproductsubGroup.length; }
+		var idrowprsinidproductsub = idrowprsinidproductsubGroup.substring(positionInitial,positionEnd);
+		positionInitial = positionEnd + 1;
+
+		var amount = document.getElementById('prschavcamount2' + idrowprsinidproductsub).value;
+		var nAmount = parseFloat(amount);
+
+		/*REVISAR SI HA INGRESADO UNA RESERVA PARA ESE ID DEL SUBPRODUCTO*/
+		/*for(var i=1; i <= 3; i++)*/
+		/*{*/
+			var name = 'idd' + idrowprsinidproductsub;
+			var cell = document.getElementById(name).style.display;
+
+			if (cell != 'none')
+			{
+				var prtvcgroup = document.getElementById('prtvcgroup' + idrowprsinidproductsub).value;
+				/*var proinidproduct = document.getElementById('proinidproduct' + prsinidproductsub).value;*/
+				/*var chainidchannel = document.getElementById('chainidchannel' + prsinidproductsub).value;*/
+				var dataRegistryFrom = document.getElementById('registryfrom' + idrowprsinidproductsub).value;
+				var indexPax = document.getElementById('pax' + idrowprsinidproductsub).options.selectedIndex;
+				var valuePax = document.getElementById('pax' + idrowprsinidproductsub).options[indexPax].value;
+				var dataRegistryTo = "";
+
+				if (prtvcgroup == 1)
+				{
+					dataRegistryTo = document.getElementById('registryto' + idrowprsinidproductsub).value;
+				}
+
+				if (prtvcgroup == 1 && dataRegistryFrom != null && dataRegistryFrom != "" && dataRegistryTo != null && dataRegistryTo != "" && valuePax != null && valuePax != "")
+				{
+					var sRegistryFrom = "" + dataRegistryFrom.substring(6,10) + dataRegistryFrom.substring(3,5) + dataRegistryFrom.substring(0,2);
+					var sRegistryTo = "" + dataRegistryTo.substring(6,10) + dataRegistryTo.substring(3,5) + dataRegistryTo.substring(0,2);
+
+					var nNights = (getDaysBetweenDates(sRegistryFrom, sRegistryTo)); /* + 1*/
+					var nImport = (nAmount * nNights);
+					subtotal = subtotal + nImport;
+					document.getElementById('night' + idrowprsinidproductsub).value = nNights;
+					document.getElementById('import' + idrowprsinidproductsub).value = nImport.toFixed(2);
+				}
+				else if(prtvcgroup != 1 && dataRegistryFrom != null && dataRegistryFrom != "" && valuePax != null && valuePax != "")
+				{
+					var nImport = (nAmount * valuePax);
+					subtotal = subtotal + nImport;
+					document.getElementById('import' + idrowprsinidproductsub).value = nImport.toFixed(2);
+				}
+			}
+		/*}*/
+	}
+	while (positionInitial <= idrowprsinidproductsubGroup.length);
+
+	document.getElementById('subtotal').value = subtotal.toFixed(2);
+}
+
+function cartgetSubTotalNewVersion()
+{
+	var idrowprsinidproductsubGroup = document.getElementById('idrowprsinidproductsubGroup').value;
+	var vcidlanguage = document.getElementById('vcidlanguage').value;
+	var positionInitial = 0;
+	var positionEnd = 0;
+	/*var addCart = "";*/
+	var subtotal = 0.00;
+	var amountcommissionfee = document.getElementById('amountcommissionfee').value;
+	var nAmountcommissionfee = parseFloat(amountcommissionfee);
+	var total = 0.00;
+
+
+	/*REVISAMOS QUE LAS FECHAS SEAN VALIDAS*/
+	do
+	{
+		/*OBTENEMOS EL ID DEL SUBPRODUCTO*/
+		positionEnd = idrowprsinidproductsubGroup.indexOf(',',positionInitial);
+		if (positionEnd == -1) { positionEnd = idrowprsinidproductsubGroup.length; }
+		var idrowprsinidproductsub = idrowprsinidproductsubGroup.substring(positionInitial,positionEnd);
+		positionInitial = positionEnd + 1;
+
+		/*REVISAR SI HA INGRESADO UNA RESERVA PARA ESE ID DEL SUBPRODUCTO*/
+		/*for(var i=1; i <= 3; i++)*/
+		/*{*/
+			/*var name = 'idd' + idrowprsinidproductsub;*/
+			/*var cell = document.getElementById(name).style.display;*/
+
+			/*if (cell != 'none')*/
+			/*{*/
+				var prtvcgroup = document.getElementById('prtvcgroup' + idrowprsinidproductsub).value;
+
+				if (prtvcgroup == 1)
+				{
+					var dataRegistryFrom = document.getElementById('registryfrom' + idrowprsinidproductsub).value;
+					var dataRegistryTo = document.getElementById('registryto' + idrowprsinidproductsub).value;
+
+					if (dataRegistryFrom != null && dataRegistryFrom != "" && dataRegistryTo != null && dataRegistryTo != "")
+					{
+						var sRegistryFrom = "";
+						var sRegistryTo = "";
+
+						if (vcidlanguage != null && vcidlanguage == 'ES')
+						{
+							/*IDIOMA ES - DD/MMM/YYYY*/
+							sRegistryFrom = "" + dataRegistryFrom.substring(7,11) + getNumberMonth(dataRegistryFrom, vcidlanguage) + dataRegistryFrom.substring(0,2);
+							sRegistryTo = "" + dataRegistryTo.substring(7,11) + getNumberMonth(dataRegistryTo, vcidlanguage) + dataRegistryTo.substring(0,2);
+						}
+						else
+						{
+							/*IDIOMA US - MMM/DD/YYYY*/
+							sRegistryFrom = "" + dataRegistryFrom.substring(7,11) + getNumberMonth(dataRegistryFrom, vcidlanguage) + dataRegistryFrom.substring(4,6);
+							sRegistryTo = "" + dataRegistryTo.substring(7,11) + getNumberMonth(dataRegistryTo, vcidlanguage) + dataRegistryTo.substring(4,6);
+						}
+
+						var nRegistryFrom = parseInt(sRegistryFrom,10);
+						var nRegistryTo = parseInt(sRegistryTo,10);
+
+						if ((nRegistryFrom > nRegistryTo) || (nRegistryFrom == nRegistryTo))
+						{
+
+							return;
+						}
+					}
+				}
+			/*}*/
+		/*}*/
+	}
+	while (positionInitial <= idrowprsinidproductsubGroup.length);
+
+	positionInitial = 0;
+	positionEnd = 0;
+
+	/*PROCEDEMOS A OBTENER EL TOTAL*/
+	do
+	{
+		/*OBTENEMOS EL ID DEL SUBPRODUCTO*/
+		positionEnd = idrowprsinidproductsubGroup.indexOf(',',positionInitial);
+		if (positionEnd == -1) { positionEnd = idrowprsinidproductsubGroup.length; }
+		var idrowprsinidproductsub = idrowprsinidproductsubGroup.substring(positionInitial,positionEnd);
+		positionInitial = positionEnd + 1;
+
+		var amount = document.getElementById('prschavcamount2' + idrowprsinidproductsub).value;
+		var nAmount = parseFloat(amount);
+
+		/*REVISAR SI HA INGRESADO UNA RESERVA PARA ESE ID DEL SUBPRODUCTO*/
+		/*for(var i=1; i <= 3; i++)*/
+		/*{*/
+			/*var name = 'idd' + idrowprsinidproductsub;*/
+			/*var cell = document.getElementById(name).style.display;*/
+
+			/*if (cell != 'none')*/
+			/*{*/
+				var prtvcgroup = document.getElementById('prtvcgroup' + idrowprsinidproductsub).value;
+				/*var proinidproduct = document.getElementById('proinidproduct' + prsinidproductsub).value;*/
+				/*var chainidchannel = document.getElementById('chainidchannel' + prsinidproductsub).value;*/
+				var dataRegistryFrom = document.getElementById('registryfrom' + idrowprsinidproductsub).value;
+				var indexPax = document.getElementById('pax' + idrowprsinidproductsub).options.selectedIndex;
+				var valuePax = document.getElementById('pax' + idrowprsinidproductsub).options[indexPax].value;
+				var dataRegistryTo = "";
+
+				if (prtvcgroup == 1)
+				{
+					dataRegistryTo = document.getElementById('registryto' + idrowprsinidproductsub).value;
+				}
+
+				if (prtvcgroup == 1 && dataRegistryFrom != null && dataRegistryFrom != "" && dataRegistryTo != null && dataRegistryTo != "" && valuePax != null && valuePax != "")
+				{
+					var sRegistryFrom = "";
+					var sRegistryTo = "";
+
+					if (vcidlanguage != null && vcidlanguage == 'ES')
+					{
+						/*IDIOMA ES - DD/MMM/YYYY*/
+						sRegistryFrom = "" + dataRegistryFrom.substring(7,11) + getNumberMonth(dataRegistryFrom, vcidlanguage) + dataRegistryFrom.substring(0,2);
+						sRegistryTo = "" + dataRegistryTo.substring(7,11) + getNumberMonth(dataRegistryTo, vcidlanguage) + dataRegistryTo.substring(0,2);
+					}
+					else
+					{
+						/*IDIOMA US - MMM/DD/YYYY*/
+						sRegistryFrom = "" + dataRegistryFrom.substring(7,11) + getNumberMonth(dataRegistryFrom, vcidlanguage) + dataRegistryFrom.substring(4,6);
+						sRegistryTo = "" + dataRegistryTo.substring(7,11) + getNumberMonth(dataRegistryTo, vcidlanguage) + dataRegistryTo.substring(4,6);
+					}
+
+					var nNights = (getDaysBetweenDates(sRegistryFrom, sRegistryTo)); /* + 1*/
+					var nImport = (nAmount * nNights);
+					subtotal = subtotal + nImport;
+					/*document.getElementById('night' + idrowprsinidproductsub).value = nNights;*/
+					document.getElementById('import' + idrowprsinidproductsub).value = nImport.toFixed(2);
+				}
+				else if(prtvcgroup != 1 && dataRegistryFrom != null && dataRegistryFrom != "" && valuePax != null && valuePax != "")
+				{
+					var nImport = (nAmount * valuePax);
+					subtotal = subtotal + nImport;
+					document.getElementById('import' + idrowprsinidproductsub).value = nImport.toFixed(2);
+				}
+			/*}*/
+		/*}*/
+	}
+	while (positionInitial <= idrowprsinidproductsubGroup.length);
+
+	total = subtotal + nAmountcommissionfee;
+	document.getElementById('subtotal').value = subtotal.toFixed(2);
+	document.getElementById('total').value = total.toFixed(2);
+}
+
+function verifyDate(typeRegistry)
+{
+	var prsinidproductsubGroup = document.getElementById('prsinidproductsubGroup').value;
+	var positionInitial = 0;
+	var positionEnd = 0;
+	/*var addCart = "";*/
+
+	/*REVISAMOS QUE LAS FECHAS SEAN VALIDAS*/
+	do
+	{
+		/*OBTENEMOS EL ID DEL SUBPRODUCTO*/
+		positionEnd = prsinidproductsubGroup.indexOf(',',positionInitial);
+		if (positionEnd == -1) { positionEnd = prsinidproductsubGroup.length; }
+		var prsinidproductsub = prsinidproductsubGroup.substring(positionInitial,positionEnd);
+		positionInitial = positionEnd + 1;
+
+		/*REVISAR SI HA INGRESADO UNA RESERVA PARA ESE ID DEL SUBPRODUCTO*/
+		for(var i=1; i <= 3; i++)
+		{
+			var name = 'idd' + i + prsinidproductsub;
+			var cell = document.getElementById(name).style.display;
+
+			if (cell != 'none')
+			{
+				var prtvcgroup = document.getElementById('prtvcgroup' + prsinidproductsub).value;
+				var prschreturn = document.getElementById('prschreturn' + prsinidproductsub).value;
+
+				if (prtvcgroup == 1 || (prtvcgroup == 3 && prschreturn == 1))
+				{
+					/*HOTEL	O TICKET(IDA Y VUELTA)*/
+					var dataRegistryFrom = document.getElementById('registryfrom' + i + prsinidproductsub).value;
+					var dataRegistryTo = document.getElementById('registryto' + i + prsinidproductsub).value;
+
+					if (dataRegistryFrom != null && dataRegistryFrom != "" && dataRegistryTo != null && dataRegistryTo != "")
+					{
+						var sRegistryFrom = "" + dataRegistryFrom.substring(6,10) + dataRegistryFrom.substring(3,5) + dataRegistryFrom.substring(0,2);
+						var sRegistryTo = "" + dataRegistryTo.substring(6,10) + dataRegistryTo.substring(3,5) + dataRegistryTo.substring(0,2);
+
+						var nRegistryFrom = parseInt(sRegistryFrom,10);
+						var nRegistryTo = parseInt(sRegistryTo,10);
+
+						if (prtvcgroup == 1 && ((nRegistryFrom > nRegistryTo) || (nRegistryFrom == nRegistryTo)))
+						{	/*HOTEL*/
+							if (typeRegistry == 1)
+							{	/*From*/
+								/*document.getElementById('registryfrom' + i + prsinidproductsub).value = "";*/
+								document.getElementById('registryto' + i + prsinidproductsub).value = "";
+							}
+							else if (typeRegistry == 2)
+							{	/*To*/
+								/*document.getElementById('registryto' + i + prsinidproductsub).value = "";*/
+								document.getElementById('registryfrom' + i + prsinidproductsub).value = "";
+							}
+
+							return;
+						}
+						else if ((prtvcgroup == 3 && prschreturn == 1) && (nRegistryFrom > nRegistryTo))
+						{	/*TICKET(IDA Y VUELTA)*/
+							if (typeRegistry == 1)
+							{	/*From*/
+								/*document.getElementById('registryfrom' + i + prsinidproductsub).value = "";*/
+								document.getElementById('registryto' + i + prsinidproductsub).value = "";
+							}
+							else if (typeRegistry == 2)
+							{	/*To*/
+								/*document.getElementById('registryto' + i + prsinidproductsub).value = "";*/
+								document.getElementById('registryfrom' + i + prsinidproductsub).value = "";
+							}
+
+							return;
+						}
+					}
+				}
+			}
+		}
+	}
+	while (positionInitial <= prsinidproductsubGroup.length);
+}
+
+function verifyDateNewVersion(typeRegistry)
+{
+	var idrowprsinidproductsubGroup = document.getElementById('idrowprsinidproductsubGroup').value;
+	var positionInitial = 0;
+	var positionEnd = 0;
+	/*var addCart = "";*/
+
+	/*REVISAMOS QUE LAS FECHAS SEAN VALIDAS*/
+	do
+	{
+		/*OBTENEMOS EL ID DEL SUBPRODUCTO*/
+		positionEnd = idrowprsinidproductsubGroup.indexOf(',',positionInitial);
+		if (positionEnd == -1) { positionEnd = idrowprsinidproductsubGroup.length; }
+
+		var idrowprsinidproductsub = idrowprsinidproductsubGroup.substring(positionInitial,positionEnd);
+		positionInitial = positionEnd + 1;
+
+		/*REVISAR SI HA INGRESADO UNA RESERVA PARA ESE ID DEL SUBPRODUCTO*/
+		/*for(var i=1; i <= 3; i++)*/
+		/*{*/
+			var name = 'idd' + idrowprsinidproductsub;
+			var cell = document.getElementById(name).style.display;
+
+			if (cell != 'none')
+			{
+				var prtvcgroup = document.getElementById('prtvcgroup' + idrowprsinidproductsub).value;
+				var prschreturn = document.getElementById('prschreturn' + idrowprsinidproductsub).value;
+
+				if (prtvcgroup == 1 || (prtvcgroup == 3 && prschreturn == 1))
+				{
+					/*HOTEL	O TICKET(IDA Y VUELTA)*/
+					var dataRegistryFrom = document.getElementById('registryfrom' + idrowprsinidproductsub).value;
+					var dataRegistryTo = document.getElementById('registryto' + idrowprsinidproductsub).value;
+
+					if (dataRegistryFrom != null && dataRegistryFrom != "" && dataRegistryTo != null && dataRegistryTo != "")
+					{
+						var sRegistryFrom = "" + dataRegistryFrom.substring(6,10) + dataRegistryFrom.substring(3,5) + dataRegistryFrom.substring(0,2);
+						var sRegistryTo = "" + dataRegistryTo.substring(6,10) + dataRegistryTo.substring(3,5) + dataRegistryTo.substring(0,2);
+
+						var nRegistryFrom = parseInt(sRegistryFrom,10);
+						var nRegistryTo = parseInt(sRegistryTo,10);
+
+						if (prtvcgroup == 1 && ((nRegistryFrom > nRegistryTo) || (nRegistryFrom == nRegistryTo)))
+						{	/*HOTEL*/
+							if (typeRegistry == 1)
+							{	/*From*/
+								/*document.getElementById('registryfrom' + idrowprsinidproductsub).value = "";*/
+								document.getElementById('registryto' + idrowprsinidproductsub).value = "";
+							}
+							else if (typeRegistry == 2)
+							{	/*To*/
+								/*document.getElementById('registryto' + idrowprsinidproductsub).value = "";*/
+								document.getElementById('registryfrom' + idrowprsinidproductsub).value = "";
+							}
+
+							return;
+						}
+						else if ((prtvcgroup == 3 && prschreturn == 1) && (nRegistryFrom > nRegistryTo))
+						{	/*TICKET(IDA Y VUELTA)*/
+							if (typeRegistry == 1)
+							{	/*From*/
+								/*document.getElementById('registryfrom' + idrowprsinidproductsub).value = "";*/
+								document.getElementById('registryto' + idrowprsinidproductsub).value = "";
+							}
+							else if (typeRegistry == 2)
+							{	/*To*/
+								/*document.getElementById('registryto' + idrowprsinidproductsub).value = "";*/
+								document.getElementById('registryfrom' + idrowprsinidproductsub).value = "";
+							}
+
+							return;
+						}
+					}
+				}
+			}
+		/*}*/
+	}
+	while (positionInitial <= idrowprsinidproductsubGroup.length);
+}
+
+function cartverifyDateNewVersion(typeRegistry)
+{
+	var idrowprsinidproductsubGroup = document.getElementById('idrowprsinidproductsubGroup').value;
+	var vcidlanguage = document.getElementById('vcidlanguage').value;
+	var positionInitial = 0;
+	var positionEnd = 0;
+	/*var addCart = "";*/
+
+	/*REVISAMOS QUE LAS FECHAS SEAN VALIDAS*/
+	do
+	{
+		/*OBTENEMOS EL ID DEL SUBPRODUCTO*/
+		positionEnd = idrowprsinidproductsubGroup.indexOf(',',positionInitial);
+		if (positionEnd == -1) { positionEnd = idrowprsinidproductsubGroup.length; }
+		var idrowprsinidproductsub = idrowprsinidproductsubGroup.substring(positionInitial,positionEnd);
+		positionInitial = positionEnd + 1;
+
+		/*REVISAR SI HA INGRESADO UNA RESERVA PARA ESE ID DEL SUBPRODUCTO*/
+		/*for(var i=1; i <= 3; i++)*/
+		/*{*/
+			/*var name = 'idd' + idrowprsinidproductsub;*/
+			/*var cell = document.getElementById(name).style.display;*/
+
+			/*if (cell != 'none')*/
+			/*{*/
+				var prtvcgroup = document.getElementById('prtvcgroup' + idrowprsinidproductsub).value;
+				var prschreturn = document.getElementById('prschreturn' + idrowprsinidproductsub).value;
+
+				if (prtvcgroup == 1 || (prtvcgroup == 3 && prschreturn == 1))
+				{
+					/*HOTEL	O TICKET(IDA Y VUELTA)*/
+					var dataRegistryFrom = document.getElementById('registryfrom' + idrowprsinidproductsub).value;
+					var dataRegistryTo = document.getElementById('registryto' + idrowprsinidproductsub).value;
+
+					if (dataRegistryFrom != null && dataRegistryFrom != "" && dataRegistryTo != null && dataRegistryTo != "")
+					{
+						var sRegistryFrom = "";
+						var sRegistryTo = "";
+
+						if (vcidlanguage != null && vcidlanguage == 'ES')
+						{
+							/*IDIOMA ES - DD/MMM/YYYY*/
+							sRegistryFrom = "" + dataRegistryFrom.substring(7,11) + getNumberMonth(dataRegistryFrom, vcidlanguage) + dataRegistryFrom.substring(0,2);
+							sRegistryTo = "" + dataRegistryTo.substring(7,11) + getNumberMonth(dataRegistryTo, vcidlanguage) + dataRegistryTo.substring(0,2);
+						}
+						else
+						{
+							/*IDIOMA US - MMM/DD/YYYY*/
+							sRegistryFrom = "" + dataRegistryFrom.substring(7,11) + getNumberMonth(dataRegistryFrom, vcidlanguage) + dataRegistryFrom.substring(4,6);
+							sRegistryTo = "" + dataRegistryTo.substring(7,11) + getNumberMonth(dataRegistryTo, vcidlanguage) + dataRegistryTo.substring(4,6);
+						}
+
+
+						var nRegistryFrom = parseInt(sRegistryFrom,10);
+						var nRegistryTo = parseInt(sRegistryTo,10);
+
+						if (prtvcgroup == 1 && ((nRegistryFrom > nRegistryTo) || (nRegistryFrom == nRegistryTo)))
+						{	/*HOTEL*/
+							if (typeRegistry == 1)
+							{	/*From*/
+								/*document.getElementById('registryfrom' + idrowprsinidproductsub).value = "";*/
+								document.getElementById('registryto' + idrowprsinidproductsub).value = "";
+							}
+							else if (typeRegistry == 2)
+							{	/*To*/
+								/*document.getElementById('registryto' + idrowprsinidproductsub).value = "";*/
+								document.getElementById('registryfrom' + idrowprsinidproductsub).value = "";
+							}
+
+							return;
+						}
+						else if ((prtvcgroup == 3 && prschreturn == 1) && (nRegistryFrom > nRegistryTo))
+						{	/*TICKET(IDA Y VUELTA)*/
+							if (typeRegistry == 1)
+							{	/*From*/
+								/*document.getElementById('registryfrom' + idrowprsinidproductsub).value = "";*/
+								document.getElementById('registryto' + idrowprsinidproductsub).value = "";
+							}
+							else if (typeRegistry == 2)
+							{	/*To*/
+								/*document.getElementById('registryto' + idrowprsinidproductsub).value = "";*/
+								document.getElementById('registryfrom' + idrowprsinidproductsub).value = "";
+							}
+
+							return;
+						}
+					}
+				}
+			/*}*/
+		/*}*/
+	}
+	while (positionInitial <= idrowprsinidproductsubGroup.length);
+}
+
+function searchGoogle(type)
+{
+	var search = "";
+
+	if (type == 1)
+	{
+		search = document.getElementById("q1").value;
+	}
+	else
+	{
+		search = document.getElementById("q2").value;
+	}
+
+	document.getElementById("q").value = search;
+	document.getElementById("cse-search-box").submit();
+}
+
+function imgError(image, dominioandnameimage)
+{
+    image.onerror = "";
+    image.src = dominioandnameimage;
+    return true;
+}
+
+function searchHotel(vcidlanguage)
+{
+	var prolanvcname = null;
+	var typesearch = null;
+	var typesearch1 = document.getElementById('typesearch1').checked;
+	var typesearch2 = document.getElementById('typesearch2').checked;
+
+	var messageerror = "";
+	removeStyle('bodyForm:prolanvcname');
+
+	/*BUSQUEDA POR DESTINO = 1*/
+	/*BUSQUEDA POR NOMBRE = 2*/
+	if (typesearch1)
+	{
+		typesearch = '1';
+	}
+	else if (typesearch2)
+	{
+		typesearch = '2';
+		prolanvcname = eliminarEspaciosCostados(document.getElementById('bodyForm:prolanvcname').value);
+	}
+
+	if (typesearch == null || typesearch == '')
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') 	{ messageerror = "Debe seleccionar un tipo de b&#250;squeda."; }
+		else												{ messageerror = "Select a search type.";	}
+	}
+	else if(typesearch == '2' && (prolanvcname == null || prolanvcname == ''))
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES')	{ messageerror = "Nombre de hotel es requerido."; }
+		else 												{ messageerror = "Hotel name is required."; }
+		setErrorStyle('bodyForm:prolanvcname');
+		document.getElementById('bodyForm:prolanvcname').focus();
+	}
+
+	if (messageerror.length > 1)
+	{
+		showMessage(((vcidlanguage != null && vcidlanguage == 'ES') ? 'Mensaje' : 'Message'), messageerror);
+		return;
+	}
+
+	document.getElementById('bodyForm:typesearch').value = typesearch;
+	document.getElementById('bodyForm:linkSearchHotel').click();
+}
+
+function searchHotelHome(vcidlanguage, typesearch)
+{
+	/*BUSQUEDA POR DESTINO = 1*/
+	/*BUSQUEDA POR NOMBRE = 2*/
+	var typesearch1 = null;
+	var typesearch2 = null;
+	var prolanvcname = null;
+	var messageerror = "";
+	removeStyle('bodyForm:prolanvcname');
+
+	if(typesearch == '1')
+	{
+		typesearch1 = document.getElementById('typesearch1').checked;
+	}
+	else if(typesearch == '2')
+	{
+		typesearch2 = document.getElementById('typesearch2').checked;
+		prolanvcname = eliminarEspaciosCostados(document.getElementById('bodyForm:prolanvcname').value);
+	}
+
+	if ((typesearch == '1' && typesearch1 == false) || (typesearch == '2' && typesearch2 == false))
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') 	{ messageerror = "Debe seleccionar un tipo de b&#250;squeda."; }
+		else												{ messageerror = "Select a search type.";	}
+	}
+	else if(typesearch == '2' && (prolanvcname == null || prolanvcname == ''))
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES')	{ messageerror = "Nombre de hotel es requerido."; }
+		else 												{ messageerror = "Hotel name is required."; }
+		setErrorStyle('bodyForm:prolanvcname');
+		document.getElementById('bodyForm:prolanvcname').focus();
+	}
+
+	if (messageerror.length > 1)
+	{
+		showMessage(((vcidlanguage != null && vcidlanguage == 'ES') ? 'Mensaje' : 'Message'), messageerror);
+		return;
+	}
+
+	document.getElementById('bodyForm:typesearch').value = typesearch;
+	document.getElementById('bodyForm:linkSearchHotel').click();
+}
+
+function searchTicketHome(vcidlanguage)
+{
+	var returnproductsub1 = document.getElementById('returnproductsub1').checked;	/*IDA*/
+	var returnproductsub2 = document.getElementById('returnproductsub2').checked;	/*IDA Y VUELTA*/
+	var returnproductsub = '1';
+	var messageerror = "";
+
+	if (returnproductsub1 == false && returnproductsub2 == false)
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') 	{ messageerror = "Debe seleccionar un tipo de boleto."; }
+		else												{ messageerror = "Select a ticket type.";	}
+	}
+
+	if (returnproductsub1 == true)
+	{	/*IDA*/
+		returnproductsub = '0';
+	}
+	else if (returnproductsub2 == true)
+	{	/*IDA Y VUELTA*/
+		returnproductsub = '1';
+	}
+
+	if (messageerror.length > 1)
+	{
+		showMessage(((vcidlanguage != null && vcidlanguage == 'ES') ? 'Mensaje' : 'Message'), messageerror);
+		return;
+	}
+
+	document.getElementById('bodyForm:returnproductsub').value = returnproductsub;
+	document.getElementById('bodyForm:linkSearchTicket').click();
+}
+
+function searchTicketHome2(vcidlanguage, proorigin2locinidlocation, protarget2locinidlocation)
+{
+	document.getElementById('bodyForm0:proorigin2locinidlocation').value = proorigin2locinidlocation;
+	document.getElementById('bodyForm0:protarget2locinidlocation').value = protarget2locinidlocation;
+	document.getElementById('bodyForm0:returnproductsub').value = '1'; /*IDA Y VUELTA*/
+	document.getElementById('bodyForm0:linkSearchTicket').click();
+}
+
+/*SE UTILIZA PARA LOS HTML DE HOME DE TICKETS*/
+function searchTicketHome3(vcidlanguage)
+{
+	var returnproductsub1 = document.getElementById('returnproductsub1').checked;	/*IDA*/
+	var returnproductsub2 = document.getElementById('returnproductsub2').checked;	/*IDA Y VUELTA*/
+	var returnproductsub = '1';
+	var messageerror = "";
+
+	if (returnproductsub1 == false && returnproductsub2 == false)
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') 	{ messageerror = "Debe seleccionar un tipo de boleto."; }
+		else												{ messageerror = "Select a ticket type.";	}
+	}
+
+	if (messageerror.length > 1)
+	{
+		showMessage(((vcidlanguage != null && vcidlanguage == 'ES') ? 'Mensaje' : 'Message'), messageerror);
+		return;
+	}
+
+	if (returnproductsub1 == true)
+	{	/*IDA*/
+		returnproductsub = '0';
+	}
+	else if (returnproductsub2 == true)
+	{	/*IDA Y VUELTA*/
+		returnproductsub = '1';
+	}
+
+	var valueproorigin2locinidlocation = document.getElementById('bodyForm:proorigin2locinidlocation').value;
+	var valueprotarget2locinidlocation = document.getElementById('bodyForm:protarget2locinidlocation').value;
+
+	document.getElementById('bodyForm0:proorigin2locinidlocation').value = valueproorigin2locinidlocation;
+	document.getElementById('bodyForm0:protarget2locinidlocation').value = valueprotarget2locinidlocation;
+	document.getElementById('bodyForm0:returnproductsub').value = returnproductsub;
+	document.getElementById('bodyForm0:linkSearchTicket').click();
+}
+
+/*MARCA O DESMARCA LOS CHECKBOX EN LOS SIGUIENTES CASOS Y LUEGO EJECUTA LA BUSQUEDA REFINADA:*/
+/*SI EL CHECKBOX "TODOS" ESTA MARCADO, DESMARCA EL RESTO DE CHECKBOX*/
+/*SI SE MARCA OTRO CHECKBOX DIFERENTE AL CHECKBOX "TODOS", DESMARCA EL CHECKBOX "TODOS"*/
+function refineSearch(name, selectedvalue, idany)
+{
+	if (selectedvalue == document.getElementById(idany).value)
+	{
+		/*EL VALOR MARCADO ES IGUAL A ANY, POR LO TANTO DESMARCAR EL RESTO*/
+		if(document.getElementById(idany).checked == true)
+		{
+			var items = document.getElementsByName(name);
+			for(var i=0; i < items.length; i++)
+			{
+				var iditem = name + ":" + i;
+				if (iditem != idany)
+				{
+					document.getElementById(iditem).checked = false;
+				}
+			}
+		}
+	}
+	else
+	{
+		/*EL VALOR MARCADO FUE DIFERENTE DE ANY, POR LO TANTO DESMARCAR ANY*/
+		var selected = false;
+		var items = document.getElementsByName(name);
+
+		for(var i=0; i < items.length; i++)
+		{
+			var iditem = name + ":" + i;
+			if (iditem != idany)
+			{
+				if (document.getElementById(iditem).checked == true)
+				{
+					selected = true;
+					break;
+				}
+			}
+		}
+
+		if (selected == true)
+		{
+			document.getElementById(idany).checked = false;
+		}
+		else
+		{
+			document.getElementById(idany).checked = true;
+		}
+	}
+
+	document.getElementById('bodyForm:linkRefineSearch').click();
+}
+
+/*MARCA O DESMARCA LOS CHECKBOX EN LOS SIGUIENTES CASOS Y LUEGO EJECUTA LA BUSQUEDA REFINADA:*/
+/*SI SE MARCA UN CHECKBOX, TODOS LOS DEMAS CHECKBOX SE DESMARCAN*/
+/*SI SE DESMARCAN TODOS LOS CHECKBOX, SE MARCA EL CHECKBOX "TODOS"*/
+/*
+/* NOTA: F A L T A  T E R M I N A R  L A  LOGICA*/
+/* */
+function refineSearch2(name, selectedvalue, idany)
+{
+	if (selectedvalue == document.getElementById(idany).value)
+	{
+		/*EL VALOR MARCADO ES IGUAL A ANY, POR LO TANTO DESMARCAR EL RESTO*/
+		if(document.getElementById(idany).checked == true)
+		{
+			var items = document.getElementsByName(name);
+			for(var i=0; i < items.length; i++)
+			{
+				var iditem = name + ":" + i;
+				if (iditem != idany)
+				{
+					document.getElementById(iditem).checked = false;
+				}
+			}
+		}
+	}
+	else
+	{
+		/*EL VALOR MARCADO FUE DIFERENTE DE ANY, POR LO TANTO DESMARCAR ANY*/
+		var selected = false;
+		var items = document.getElementsByName(name);
+
+		for(var i=0; i < items.length; i++)
+		{
+			var iditem = name + ":" + i;
+			if (iditem != idany)
+			{
+				if (document.getElementById(iditem).checked == true)
+				{
+					selected = true;
+					break;
+				}
+			}
+		}
+
+		if (selected == true)
+		{
+			document.getElementById(idany).checked = false;
+		}
+		else
+		{
+			document.getElementById(idany).checked = true;
+		}
+	}
+
+	document.getElementById('bodyForm:linkRefineSearch').click();
+}
+
+function detail(inidproduct)
+{
+	document.getElementById('bodyForm:inidproduct').value = inidproduct;
+	document.getElementById('bodyForm:linkDetail').click();
+}
+
+function searchBestDeals(inidproduct)
+{
+	document.getElementById('bodyForm:inidproduct').value = inidproduct;
+	document.getElementById('bodyForm:linkSearchBestDeals').click();
+}
+
+function selectQty(textSelectqtyrequired, vcidlanguage)
+{
+	var prsinidproductsubGroup = document.getElementById('prsinidproductsubGroup').value;
+	var positionInitial = 0;
+	var positionEnd = 0;
+	var addCart	= "";
+
+	do
+	{
+		/*OBTENEMOS EL ID DEL SUBPRODUCTO*/
+		positionEnd = prsinidproductsubGroup.indexOf(',',positionInitial);
+		if (positionEnd == -1) { positionEnd = prsinidproductsubGroup.length; }
+		var prsinidproductsub = prsinidproductsubGroup.substring(positionInitial,positionEnd);
+		positionInitial = positionEnd + 1;
+
+		var qty = document.getElementById('qty' + prsinidproductsub).value;
+
+		if (qty != null && qty != "" && qty != 0)
+		{
+			addCart = "" + addCart + prsinidproductsub + "," + qty + ";";
+		}
+	}
+	while (positionInitial <= prsinidproductsubGroup.length);
+
+	if (addCart	== '')
+	{
+		showMessage(((vcidlanguage != null && vcidlanguage == 'ES') ? 'Mensaje' : 'Message'), textSelectqtyrequired + ".");
+		return;
+	}
+
+	document.getElementById('bodyForm:prsinidproductsubQty').value = addCart;
+	document.getElementById('bodyForm:linkReserve').click();
+}
+
+function packageselectQtyTravelers(textSelectqtyrequired, vcidlanguage)
+{
+	var prsinidproductsubGroup = document.getElementById('prsinidproductsubGroup').value;
+	var positionInitial = 0;
+	var positionEnd = 0;
+	var addCart	= "";
+
+	do
+	{
+		/*OBTENEMOS EL ID DEL SUBPRODUCTO*/
+		positionEnd = prsinidproductsubGroup.indexOf(',',positionInitial);
+		if (positionEnd == -1) { positionEnd = prsinidproductsubGroup.length; }
+		var prsinidproductsub = prsinidproductsubGroup.substring(positionInitial,positionEnd);
+		positionInitial = positionEnd + 1;
+
+		var qty = document.getElementById('qty' + prsinidproductsub).value;
+		var pax = document.getElementById('pax' + prsinidproductsub).value;
+
+		if (qty != null && qty != "" && qty != 0 && pax != null && pax != "" && pax != 0)
+		{
+			addCart = "" + addCart + prsinidproductsub + "," + qty + "," + pax + ";";
+		}
+	}
+	while (positionInitial <= prsinidproductsubGroup.length);
+
+	if (addCart	== '')
+	{
+		showMessage(((vcidlanguage != null && vcidlanguage == 'ES') ? 'Mensaje' : 'Message'), textSelectqtyrequired + ".");
+		return;
+	}
+
+	document.getElementById('bodyForm:prsinidproductsubQty').value = addCart;
+	document.getElementById('bodyForm:linkReserve').click();
+}
+
+function selectTicket(textSelectticketrequired, vcidlanguage, alistListTicketSubCatps1, alistListTicketSubCatps2)
+{
+	var prsinidproductsubGroup = document.getElementById('prsinidproductsubGroup').value;
+	var positionInitial = 0;
+	var positionEnd = 0;
+	var addCart  = "";
+	var addCart1 = "";
+	var addCart2 = "";
+	
+	/*PARA IDA O IDA Y VUELTA*/
+	if (alistListTicketSubCatps1 != null && alistListTicketSubCatps1 != "" && alistListTicketSubCatps1.length > 0)
+	{
+		do
+		{
+			/*OBTENEMOS EL ID DEL SUBPRODUCTO*/
+			positionEnd = prsinidproductsubGroup.indexOf(',',positionInitial);
+			if (positionEnd == -1) { positionEnd = prsinidproductsubGroup.length; }
+			var prsinidproductsub = prsinidproductsubGroup.substring(positionInitial,positionEnd);
+			positionInitial = positionEnd + 1;
+
+			if (document.getElementById('go' + prsinidproductsub) && document.getElementById('go' + prsinidproductsub).checked == true)
+			{
+				addCart1 = "" + addCart1 + prsinidproductsub + ";";
+			}
+		}
+		while (positionInitial <= prsinidproductsubGroup.length);
+	}
+
+	/*PARA IDA O IDA Y VUELTA*/
+	positionInitial = 0;
+	positionEnd = 0;
+	if (alistListTicketSubCatps2 != null && alistListTicketSubCatps2 != "" && alistListTicketSubCatps2.length > 0)
+	{
+		do
+		{
+			/*OBTENEMOS EL ID DEL SUBPRODUCTO*/
+			positionEnd = prsinidproductsubGroup.indexOf(',',positionInitial);
+			if (positionEnd == -1) { positionEnd = prsinidproductsubGroup.length; }
+			var prsinidproductsub = prsinidproductsubGroup.substring(positionInitial,positionEnd);
+			positionInitial = positionEnd + 1;
+
+			if (document.getElementById('return' + prsinidproductsub) && document.getElementById('return' + prsinidproductsub).checked == true)
+			{
+				addCart2 = "" + addCart2 + prsinidproductsub + ";";
+			}
+		}
+		while (positionInitial <= prsinidproductsubGroup.length);
+	}
+
+	addCart = addCart1 + addCart2;
+	if (addCart == '')
+	{
+		showMessage(((vcidlanguage != null && vcidlanguage == 'ES') ? 'Mensaje' : 'Message'), textSelectticketrequired);
+		return;
+	}
+
+	document.getElementById('bodyForm:prsinidproductsubQty').value = "" + addCart;
+	document.getElementById('bodyForm:linkReserve').click();
+}
+
+function selectTicket2(textSelectticketrequired, vcidlanguage, prsinidproductsub)
+{
+	var addCart = "" + prsinidproductsub + ";";
+	if (addCart == null || addCart == '')
+	{
+		showMessage(((vcidlanguage != null && vcidlanguage == 'ES') ? 'Mensaje' : 'Message'), textSelectticketrequired);
+		return;
+	}
+
+	document.getElementById('bodyForm:prsinidproductsubQty').value = "" + addCart;
+	document.getElementById('bodyForm:linkReserve').click();
+}
+
+function eliminarEspaciosCostados()
+{
+	var sVariable = eliminarEspaciosCostados.arguments[0];
+	var nPosicion = 0;
+
+	if (sVariable == null || sVariable == "") { return sVariable; }
+
+	for (var i = 0; i < sVariable.length; i++)
+	{
+		if (sVariable.charAt(i) == " ")
+		{
+			nPosicion++;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	sVariable = sVariable.substring(nPosicion, sVariable.length);
+	nPosicion = sVariable.length;
+	for (var i = sVariable.length - 1; i >= 0; i--)
+	{
+		if (sVariable.charAt(i) == " ")
+		{
+			nPosicion--;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	sVariable = sVariable.substring(0,nPosicion);
+	return sVariable;
+}
+
+function returnPage()
+{
+	document.getElementById('bodyForm:returnPage').click();
+}
+
+function edit(name)
+{
+	var object = document.getElementById(name);
+
+	if (object.getAttribute('readonly') == 'readonly')
+	{
+		object.removeAttribute('style');
+		object.removeAttribute('readonly');
+	}
+	else
+	{
+		object.setAttribute('readonly', 'readonly');
+		object.setAttribute('style','border:0; background-color:transparent;');
+	}
+}
+
+function edit2(nameall, sizeall, name1, size1, name2, size2)
+{
+	var object0 = document.getElementById(nameall);
+	var object1 = document.getElementById(name1);
+	var object2 = document.getElementById(name2);
+
+	/*if (object0.getAttribute('style') == 'border:0; background-color:transparent;') , en IE es mas datos*/
+	if (object1.getAttribute('readonly') == 'readonly' || object2.getAttribute('readonly') == 'readonly')
+	{
+		/*EDIT*/
+		object0.setAttribute('style', 'border:0; display:none; visibility:hidden;');
+
+		object1.removeAttribute('style');
+		object1.removeAttribute('readonly');
+		if (object1.length > size1) { object1.setAttribute('size', size1); }
+		else 						{ object1.setAttribute('size', object1.length); }
+
+		object2.removeAttribute('style');
+		object2.removeAttribute('readonly');
+		if (object2.length > size2)	{ object2.setAttribute('size', size2); }
+		else 						{ object2.setAttribute('size', object2.length); }
+	}
+	else
+	{
+		/*NO EDIT*/
+		object0.value = object1.value + " " + object2.value;
+		object0.setAttribute('style', 'border:0; background-color:transparent;');
+		if (object0.length > sizeall) 	{ object0.setAttribute('size', sizeall); }
+		else 							{ object0.setAttribute('size', object0.length); }
+
+		object1.setAttribute('readonly', 'readonly');
+		object1.setAttribute('style','border:0; display:none; visibility:hidden;');
+		object1.removeAttribute('size');
+
+		object2.setAttribute('readonly', 'readonly');
+		object2.setAttribute('style','border:0; display:none; visibility:hidden;');
+		object2.removeAttribute('size');
+	}
+}
+
+function edit3(name, size)
+{
+	var object = document.getElementById(name);
+
+	if (object.getAttribute('readonly') == 'readonly')
+	{
+		object.removeAttribute('style');
+		object.removeAttribute('readonly');
+		if (object.length > size)	{ object.setAttribute('size', size); }
+		else						{ object.setAttribute('size', object.length); }
+	}
+	else
+	{
+		object.setAttribute('readonly', 'readonly');
+		object.setAttribute('style','border:0; background-color:transparent;');
+		object.removeAttribute('size');
+	}
+}
+
+function editcart(id, prsinidproductsub, typeGroup, typeReturn)
+{
+	if (typeGroup == 1 || (typeGroup == 3 && typeReturn == 1))
+	{
+		/*PARA EL CASO DE HOTELES O TICKETS DE IDA Y VUELTA*/
+		var registryfrom = document.getElementById("registryfrom" + id + prsinidproductsub);
+		var imgregistryfrom = document.getElementById("imgregistryfrom" + id + prsinidproductsub);
+		var registryto = document.getElementById("registryto" + id + prsinidproductsub);
+		var imgregistryto = document.getElementById("imgregistryto" + id + prsinidproductsub);
+		var pax = document.getElementById("pax" + id + prsinidproductsub);
+
+		if (registryfrom.getAttribute('readonly') == 'readonly')
+		{
+			registryfrom.removeAttribute('readonly');
+			registryfrom.removeAttribute('style');
+			imgregistryfrom.removeAttribute('style');
+			registryto.removeAttribute('readonly');
+			registryto.removeAttribute('style');
+			imgregistryto.removeAttribute('style');
+			pax.removeAttribute('disabled');
+			pax.removeAttribute('style');
+		}
+		else
+		{
+			registryfrom.setAttribute('readonly','readonly');
+			registryfrom.setAttribute('style','border:0;');
+			imgregistryfrom.setAttribute('style','border:0; display:none; visibility:hidden;');
+			registryto.setAttribute('readonly','readonly');
+			registryto.setAttribute('style','border:0;');
+			imgregistryto.setAttribute('style','border:0; display:none; visibility:hidden;');
+			pax.setAttribute('disabled','disabled');
+			pax.setAttribute('style','border:0;');
+		}
+	}
+	else
+	{
+			/*PAQUETES O TICKETS(IDA)*/
+			var registryfrom = document.getElementById("registryfrom" + id + prsinidproductsub);
+			var imgregistryfrom = document.getElementById("imgregistryfrom" + id + prsinidproductsub);
+			var pax = document.getElementById("pax" + id + prsinidproductsub);
+
+			if (registryfrom.getAttribute('readonly') == 'readonly')
+			{
+				registryfrom.removeAttribute('readonly');
+				registryfrom.removeAttribute('style');
+				imgregistryfrom.removeAttribute('style');
+				pax.removeAttribute('disabled');
+				pax.removeAttribute('style');
+			}
+			else
+			{
+				registryfrom.setAttribute('readonly','readonly');
+				registryfrom.setAttribute('style','border:0;');
+				imgregistryfrom.setAttribute('style','border:0; display:none; visibility:hidden;');
+				pax.setAttribute('disabled','disabled');
+				pax.setAttribute('style','border:0;');
+			}
+	}
+}
+
+/*NOTA: LA LOGICA ES DIFERENTE QUE EN AGREGAR, PUESTO QUE AQUI MANEJA IDCARRITO*/
+function saveCart(vcidlanguage, textcheckindateshouldnotbegreaterthancheckoutdate, textdeparturedateshouldnotbegreaterthanreturndate)
+{
+	var idrowprsinidproductsubGroup = document.getElementById('idrowprsinidproductsubGroup').value;
+	var positionInitial = 0;
+	var positionEnd = 0;
+	var addCart	= "";
+	var errorAddCart = false;
+	var messageerror = "";
+	var quantityerror = 0;
+
+	/*REVISAMOS QUE LAS FECHAS SEAN VALIDAS*/
+	do
+	{
+		/*OBTENEMOS EL ID DEL SUBPRODUCTO*/
+		positionEnd = idrowprsinidproductsubGroup.indexOf(',',positionInitial);
+		if (positionEnd == -1) { positionEnd = idrowprsinidproductsubGroup.length; }
+		var idrowprsinidproductsub = idrowprsinidproductsubGroup.substring(positionInitial,positionEnd);
+		positionInitial = positionEnd + 1;
+
+		/*REVISAR SI HA INGRESADO UNA RESERVA PARA ESE ID DEL SUBPRODUCTO*/
+		/*for(var i=1; i <= 3; i++)*/
+		/*{*/
+			/*var name = 'idd' + idrowprsinidproductsub;*/
+			/*var cell = document.getElementById(name).style.display;*/
+
+			/*if (cell != 'none')*/
+			/*{*/
+				var prtvcgroup = document.getElementById('prtvcgroup' + idrowprsinidproductsub).value;
+				var prschreturn = document.getElementById('prschreturn' + idrowprsinidproductsub).value;
+
+				if (prtvcgroup == 1 || (prtvcgroup == 3 && prschreturn == 1))
+				{
+					/*HOTEL O TICKET(IDA Y VUELTA)*/
+					removeStyle('registryfrom' + idrowprsinidproductsub);
+					removeStyle('registryto' + idrowprsinidproductsub);
+
+					var dataRegistryFrom = document.getElementById('registryfrom' + idrowprsinidproductsub).value;
+					var dataRegistryTo = document.getElementById('registryto' + idrowprsinidproductsub).value;
+
+					if (dataRegistryFrom != null && dataRegistryFrom != "" && dataRegistryTo != null && dataRegistryTo != "")
+					{
+						var sRegistryFrom = "";
+						var sRegistryTo = "";
+
+						if (vcidlanguage != null && vcidlanguage == 'ES')
+						{
+							/*IDIOMA ES - DD/MMM/YYYY*/
+							sRegistryFrom = "" + dataRegistryFrom.substring(7,11) + getNumberMonth(dataRegistryFrom, vcidlanguage) + dataRegistryFrom.substring(0,2);
+							sRegistryTo = "" + dataRegistryTo.substring(7,11) + getNumberMonth(dataRegistryTo, vcidlanguage) + dataRegistryTo.substring(0,2);
+						}
+						else
+						{
+							/*IDIOMA US - MMM/DD/YYYY*/
+							sRegistryFrom = "" + dataRegistryFrom.substring(7,11) + getNumberMonth(dataRegistryFrom, vcidlanguage) + dataRegistryFrom.substring(4,6);
+							sRegistryTo = "" + dataRegistryTo.substring(7,11) + getNumberMonth(dataRegistryTo, vcidlanguage) + dataRegistryTo.substring(4,6);
+						}
+
+						var nRegistryFrom = parseInt(sRegistryFrom,10);
+						var nRegistryTo = parseInt(sRegistryTo,10);
+
+						if (prtvcgroup == 1 && ((nRegistryFrom > nRegistryTo) || (nRegistryFrom == nRegistryTo)))
+						{	/*HOTEL*/
+							setErrorStyle('registryfrom' + idrowprsinidproductsub);								
+							showMessage(((vcidlanguage != null && vcidlanguage == 'ES') ? 'Mensaje' : 'Message'), textcheckindateshouldnotbegreaterthancheckoutdate);
+							return; 
+						}
+						else if ((prtvcgroup == 3 && prschreturn == 1) && (nRegistryFrom > nRegistryTo))
+						{	/*TICKET(IDA Y VUELTA)*/
+							setErrorStyle('registryfrom' + idrowprsinidproductsub);							
+							showMessage(((vcidlanguage != null && vcidlanguage == 'ES') ? 'Mensaje' : 'Message'), textdeparturedateshouldnotbegreaterthanreturndate);
+							return; 							
+						}
+					}
+					else
+					{
+						/*AQUI SE DA LAS FECHAS DE FROM Y TO SON VACIAS,*/
+						/*PERO NO MOSTRAMOS MENSAJES PQ SOLO ESTAMOS VERIFICANDO QUE SEAN FECHAS VALIDAS Y NO VACIAS*/
+						/*ES DECIR QUE FROM NO SEA MAYOR A TO*/
+					}
+				}
+			/*}*/
+		/*}*/
+	}
+	while (positionInitial <= idrowprsinidproductsubGroup.length);
+
+	positionInitial = 0;
+	positionEnd = 0;
+	errorAddCart = false;
+
+	/*PROCEDEMOS A AGREGAR*/
+	do
+	{
+		/*OBTENEMOS EL ID DEL SUBPRODUCTO*/
+		positionEnd = idrowprsinidproductsubGroup.indexOf(',',positionInitial);
+		if (positionEnd == -1) { positionEnd = idrowprsinidproductsubGroup.length; }
+		var idrowprsinidproductsub = idrowprsinidproductsubGroup.substring(positionInitial,positionEnd);
+		positionInitial = positionEnd + 1;
+
+		/*REVISAR SI HA INGRESADO UNA RESERVA PARA ESE ID DEL SUBPRODUCTO*/
+		/*for(var i=1; i <= 3; i++)*/
+		/*{*/
+			/*var name = 'idd' + idrowprsinidproductsub;*/
+			/*var cell = document.getElementById(name).style.display;*/
+
+			/*if (cell != 'none')*/
+			/*{*/
+				removeStyle('registryfrom' + idrowprsinidproductsub);
+				var idcarrito = document.getElementById('idcarrito' + idrowprsinidproductsub).value;
+				var prtvcgroup = document.getElementById('prtvcgroup' + idrowprsinidproductsub).value;
+				var prschreturn = document.getElementById('prschreturn' + idrowprsinidproductsub).value;
+				var proinidproduct = document.getElementById('proinidproduct' + idrowprsinidproductsub).value;
+				var prsinidproductsub = document.getElementById('prsinidproductsub' + idrowprsinidproductsub).value;
+				var chainidchannel = document.getElementById('chainidchannel' + idrowprsinidproductsub).value;
+				var dataRegistryFrom = document.getElementById('registryfrom' + idrowprsinidproductsub).value;
+				var indexPax = document.getElementById('pax' + idrowprsinidproductsub).options.selectedIndex;
+				var valuePax = document.getElementById('pax' + idrowprsinidproductsub).options[indexPax].value;
+				var dataRegistryTo = "";
+
+				if(dataRegistryFrom == null || dataRegistryFrom == "")
+				{
+					setErrorStyle('registryfrom' + idrowprsinidproductsub);
+					errorAddCart = true;
+				}
+				else
+				{
+					if (vcidlanguage != null && vcidlanguage == 'ES')
+					{
+						/*IDIOMA ES - DD/MMM/YYYY*/
+						dataRegistryFrom = "" + dataRegistryFrom.substring(0,2) + "/" + getNumberMonth(dataRegistryFrom, vcidlanguage) + "/" + dataRegistryFrom.substring(7,11);
+					}
+					else
+					{
+						/*IDIOMA US - MMM/DD/YYYY*/
+						dataRegistryFrom = "" + dataRegistryFrom.substring(4,6) + "/" + getNumberMonth(dataRegistryFrom, vcidlanguage) + "/" + dataRegistryFrom.substring(7,11);
+					}
+				}
+
+
+				if (prtvcgroup == 1 || (prtvcgroup == 3 && prschreturn == 1))
+				{
+					/*HOTEL Y TICKET(IDA Y VUELTA)*/
+					removeStyle('registryto' + idrowprsinidproductsub);
+					dataRegistryTo = document.getElementById('registryto' + idrowprsinidproductsub).value;
+
+					if(dataRegistryTo == null || dataRegistryTo == "")
+					{
+						setErrorStyle('registryto' + idrowprsinidproductsub);
+						errorAddCart = true;
+					}
+					else
+					{
+						if (vcidlanguage != null && vcidlanguage == 'ES')
+						{
+							/*IDIOMA ES - DD/MMM/YYYY*/
+							dataRegistryTo = "" + dataRegistryTo.substring(0,2) + "/" + getNumberMonth(dataRegistryTo, vcidlanguage) + "/" + dataRegistryTo.substring(7,11);
+						}
+						else
+						{
+							/*IDIOMA US - MMM/DD/YYYY*/
+							dataRegistryTo = "" + dataRegistryTo.substring(4,6) + "/" + getNumberMonth(dataRegistryTo, vcidlanguage) + "/" + dataRegistryTo.substring(7,11);
+						}
+					}
+				}
+
+				if 	   (errorAddCart == false && (prtvcgroup == 1 || (prtvcgroup == 3 && prschreturn == 1)) && dataRegistryFrom != null && dataRegistryFrom != "" && dataRegistryTo != null && dataRegistryTo != "" && valuePax != null && valuePax != "")
+				{	/*HOTEL O TICKET(IDA Y VUELTA)*/
+					addCart = addCart + idcarrito + "," + chainidchannel + "," + proinidproduct + "," + prsinidproductsub + "," + prtvcgroup + "," + prschreturn + "," + dataRegistryFrom + "," + dataRegistryTo + "," + valuePax + ";";
+				}
+				else if(errorAddCart == false && prtvcgroup != 1 && prschreturn != 1 && prschreturn != 1 && dataRegistryFrom != null && dataRegistryFrom != "" && valuePax != null && valuePax != "")
+				{
+					/*PAQUETE O TICKET(IDA)*/
+					addCart = addCart + idcarrito + "," + chainidchannel + "," + proinidproduct + "," + prsinidproductsub + "," + prtvcgroup + "," + prschreturn + "," + dataRegistryFrom + "," + dataRegistryTo + "," + valuePax + ";";
+				}
+			/*}*/
+		/*}*/
+	}
+	while (positionInitial <= idrowprsinidproductsubGroup.length);
+
+	removeStyle2('vcholdernameall', 'bodyForm:vcholdername', 'bodyForm:vcholderlastname');
+	removeStyle('bodyForm:vcholderemail');
+	var object = document.getElementById('errormessagetc');	object.setAttribute('style','border:0; display:none; visibility:hidden;');
+
+	/*REVISAR QUE HAYA LLENADO LOS DATOS DEL TITULAR DE LA RESERVA*/
+	var vcholdername = eliminarEspaciosCostados(document.getElementById('bodyForm:vcholdername').value);
+	var vcholderlastname = eliminarEspaciosCostados(document.getElementById('bodyForm:vcholderlastname').value);
+	var vcholderemail = eliminarEspaciosCostados(document.getElementById('bodyForm:vcholderemail').value);
+	var accepttc = document.getElementById('bodyForm:acceptTC').checked;
+
+	if (errorAddCart == true || addCart == null || addCart == "")
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar las fechas en que las que desear realizar las reservas." + "<br/>"; } else { messageerror += "You must enter the dates that you want to make the booking." + "<br/>"; }
+		quantityerror++;
+	}
+	if (vcholdername == null || vcholdername == "" || vcholderlastname == null || vcholderlastname == "")
+	{
+		var errorname = '';
+		if (vcholdername == null || vcholdername == "")
+		{
+			errorname = 'bodyForm:vcholdername';
+			if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar el nombre." + "<br/>"; } else { messageerror += "First name is required." + "<br/>"; }
+			quantityerror++;
+		}
+
+		if (vcholderlastname == null || vcholderlastname == "")
+		{
+			if (errorname == 'bodyForm:vcholdername') 	{ errorname = "all"; }
+			else 										{ errorname = 'bodyForm:vcholderlastname'; }
+			if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar el apellido." + "<br/>"; } else { messageerror += "Last name is required." + "<br/>"; }
+			quantityerror++;
+		}
+
+		setErrorStyle2('vcholdernameall', 'bodyForm:vcholdername', 'bodyForm:vcholderlastname', errorname);
+	}
+	if (vcholderemail == null || vcholderemail == "")
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar el e-mail." + "<br/>"; } else { messageerror += "E-mail is required." + "<br/>"; }
+		setErrorStyle('bodyForm:vcholderemail');
+		quantityerror++;
+	}
+	if (!(validateEmail(vcholderemail)))
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "El e-mail no tiene un formato correcto." + "<br/>"; } else { messageerror += "E-mail doesn't have a correct format." + "<br/>"; }
+		setErrorStyle('bodyForm:vcholderemail');
+		quantityerror++;
+	}
+	if (accepttc == false)
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe leer y aceptar los T&#233;rminos y Condiciones."; } else { messageerror += "You must read and accept Terms and Conditions."; }
+		removeStyle('errormessagetc');
+		quantityerror++;
+	}
+
+	if (messageerror.length > 1)
+	{
+		if (quantityerror < 5)
+		{
+			showMessage(((vcidlanguage != null && vcidlanguage == 'ES') ? 'Mensaje' : 'Message'), messageerror);
+		}
+		else
+		{
+			messageerror = ((vcidlanguage != null && vcidlanguage == 'ES') ? 'Debe completar los datos solicitados.' : 'You must complete the information requested.');
+			showMessage(((vcidlanguage != null && vcidlanguage == 'ES') ? 'Mensaje' : 'Message'), messageerror);
+		}
+		return;
+	}
+
+	document.getElementById('bodyForm:vcholdername').value = vcholdername;
+	document.getElementById('bodyForm:vcholderlastname').value = vcholderlastname;
+	document.getElementById('bodyForm:vcholderemail').value = vcholderemail;
+	document.getElementById('bodyForm:prsinidproductsubAdd').value = addCart;
+	document.getElementById('bodyForm:linkSaveCart').click();
+}
+
+function getNumberMonth(date, vcidlanguage)
+{
+	var numbermonth = "";
+
+	if (date != null)
+	{
+		var month = "";
+		if (vcidlanguage != null && vcidlanguage == 'ES')
+		{
+			/*DD/MMM/YYYY*/
+			month = date.toString().toUpperCase().substring(3,6);
+		}
+		else
+		{
+			/*MMM/DD/YYYY*/
+			month = date.substring(0,3).toString().toUpperCase();
+		}
+
+		if (month == 'ENE' || month == 'JAN') 		{ numbermonth = '01'; }
+		else if (month == 'FEB' || month == 'FEB')	{ numbermonth = '02'; }
+		else if (month == 'MAR' || month == 'MAR')	{ numbermonth = '03'; }
+		else if (month == 'ABR' || month == 'APR')	{ numbermonth = '04'; }
+		else if (month == 'MAY' || month == 'MAY')	{ numbermonth = '05'; }
+		else if (month == 'JUN'	|| month == 'JUN')	{ numbermonth = '06'; }
+		else if (month == 'JUL' || month == 'JUL')	{ numbermonth = '07'; }
+		else if (month == 'AGO' || month == 'AUG')	{ numbermonth = '08'; }
+		else if (month == 'SEP' || month == 'SEP')	{ numbermonth = '09'; }
+		else if (month == 'OCT' || month == 'OCT')	{ numbermonth = '10'; }
+		else if (month == 'NOV' || month == 'NOV')	{ numbermonth = '11'; }
+		else if (month == 'DIC' || month == 'DEC')	{ numbermonth = '12'; }
+	}
+
+	return numbermonth;
+}
+
+function findPos(obj)
+{
+    var curtop = 0;
+    if (obj.offsetParent)
+    {
+        do
+        {
+            curtop += obj.offsetTop;
+        }
+        while (obj = obj.offsetParent);
+    	return [curtop];
+    }
+}
+
+function scrollto(id)
+{
+	window.scroll(0,findPos(document.getElementById(id)));
+}
+
+function rowsperpage(value)
+{
+	var paginationRowsperpage50 = document.getElementById('paginationRowsperpage50').value;
+
+	if (value == paginationRowsperpage50)
+	{
+		document.getElementById('bodyForm:linkRowsPerpage50').click();
+	}
+	else
+	{
+		document.getElementById('bodyForm:linkRowsPerpage20').click();
+	}
+}
+
+function hotelactiverowsort(id, sortField, sortAscending)
+{
+	if (sortField == id)
+	{
+		if (sortAscending == 'true')
+		{
+			document.getElementById(id).className = 's_filtercriteria filteron';
+		}
+		else
+		{
+			document.getElementById(id).className = 's_filtercriteria filterdown filteron';
+		}
+	}
+	else
+	{
+		document.getElementById(id).className = 's_filtercriteria';
+	}
+}
+/*G2P y EXT*/
+function packageactiverowsort(id, sortField, sortAscending)
+{
+	if (sortField == id)
+	{
+		if (sortAscending == 'true')
+		{
+			document.getElementById(id).className = 's_filtercriteria filteron';
+		}
+		else
+		{
+			document.getElementById(id).className = 's_filtercriteria filterdown filteron';
+		}
+	}
+	else
+	{
+		document.getElementById(id).className = 's_filtercriteria';
+	}
+}
+
+function drawTRBestDeals()
+{
+	var countRow = parseInt(document.getElementById('countRow').value);
+
+	if (countRow % 3 == 0)
+	{
+		document.write('</tr>');
+	    document.write('<tr>');
+		    document.write('<td>&#160;</td>');
+		    document.write('<td>&#160;</td>');
+		    document.write('<td>&#160;</td>');
+	    document.write('</tr>');
+	    document.write('<tr>');
+	}
+
+	countRow = countRow + 1;
+	document.getElementById('countRow').value = countRow;
+}
+
+function drawFinalTableBestDeals()
+{
+			var countRow = parseInt(document.getElementById('countRow').value);
+			countRow = countRow - 1;
+
+			if (countRow % 3 == 1)
+			{
+			    document.write('<td><img width="150" height="100" /></td>');
+			    document.write('</tr>');
+			    document.write('<tr>');
+				    document.write('<td>&#160;</td>');
+				    document.write('<td>&#160;</td>');
+				    document.write('<td>&#160;</td>');
+			    document.write('</tr>');
+			}
+			else if (countRow % 3 == 2)
+			{
+			    document.write('<td><img width="150" height="100" /></td>');
+			    document.write('<td><img width="150" height="100" /></td>');
+			    document.write('</tr>');
+			    document.write('<tr>');
+				    document.write('<td>&#160;</td>');
+				    document.write('<td>&#160;</td>');
+				    document.write('<td>&#160;</td>');
+			    document.write('</tr>');
+			}
+}
+
+function drawTRTopDestination()
+{
+	var countRow = parseInt(document.getElementById('countRow').value);
+
+	if (countRow % 3 == 0)
+	{
+		document.write('</tr>');
+		document.write('<tr>');		
+	}
+
+	countRow = countRow + 1;
+	document.getElementById('countRow').value = countRow;
+}
+
+function registerCardHolderAndPaymentType(vcidlanguage, inidlocationp)
+{
+	var messageerror = "";
+	var quantityerror = 0;
+
+
+	removeStyle2('vcnameall', 'bodyForm:vcname', 'bodyForm:vclastname');
+	removeStyle('bodyForm:vcemail1');
+	removeStyle('bodyForm:vcemail2');
+	removeStyle3('bodyForm:insex', '100px');
+	removeStyle3('bodyForm:inage', '100px');
+	removeStyle3('bodyForm:iniddoctype', '100px');
+	removeStyle('bodyForm:vcdocnum');
+	removeStyle('bodyForm:vcphone1');
+	removeStyle3('bodyForm:inidlocationbillingcountry', '147px');
+	removeStyle('bodyForm:vcbillingcity');
+	removeStyle('bodyForm:vcbillingaddress');
+	removeStyle('bodyForm:vcbillingzipcode');
+	var object = document.getElementById('errormessagecard'); object.setAttribute('style','border:0; display:none; visibility:hidden;');
+
+
+	var vcname = eliminarEspaciosCostados(document.getElementById('bodyForm:vcname').value);
+	var vclastname = eliminarEspaciosCostados(document.getElementById('bodyForm:vclastname').value);
+	var vcemail1 = eliminarEspaciosCostados(document.getElementById('bodyForm:vcemail1').value);
+	var vcemail2 = eliminarEspaciosCostados(document.getElementById('bodyForm:vcemail2').value);
+	var indexinsex = document.getElementById('bodyForm:insex').options.selectedIndex;
+	var indexinage = document.getElementById('bodyForm:inage').options.selectedIndex;
+	var indexiniddoctype = document.getElementById('bodyForm:iniddoctype').options.selectedIndex;
+	var vcdocnum = eliminarEspaciosCostados(document.getElementById('bodyForm:vcdocnum').value);
+	var vcphone1 = eliminarEspaciosCostados(document.getElementById('bodyForm:vcphone1').value);
+	var indexinidlocationbillingcountry = document.getElementById('bodyForm:inidlocationbillingcountry').options.selectedIndex;
+	var valueinidlocationbillingcountry = document.getElementById('bodyForm:inidlocationbillingcountry').options[indexinidlocationbillingcountry].value;
+	var amounttotal = document.getElementById('bodyForm:amounttotal').innerHTML;
+
+	removeStyleHidden(valueinidlocationbillingcountry, inidlocationp);
+
+
+	var vcbillingstate = null;
+	if (valueinidlocationbillingcountry == inidlocationp)
+	{	/*LEER EL COMBO*/
+
+		var indexvcbillingstate = document.getElementById('bodyForm:vcbillingstate2').options.selectedIndex;
+		if (indexvcbillingstate != null && indexvcbillingstate > 0)
+		{
+			vcbillingstate = eliminarEspaciosCostados(document.getElementById('bodyForm:vcbillingstate2').options[indexvcbillingstate].value);
+		}
+	}
+	else
+	{	/*LEER CAJA DE TEXTO*/
+
+		vcbillingstate = eliminarEspaciosCostados(document.getElementById('bodyForm:vcbillingstate1').value);
+	}
+	document.getElementById('bodyForm:vcbillingstate').value = vcbillingstate;
+
+	var vcbillingcity = eliminarEspaciosCostados(document.getElementById('bodyForm:vcbillingcity').value);
+	var vcbillingaddress = eliminarEspaciosCostados(document.getElementById('bodyForm:vcbillingaddress').value);
+	var vcbillingzipcode = eliminarEspaciosCostados(document.getElementById('bodyForm:vcbillingzipcode').value);
+
+
+
+	/*VERIFICAR QUE TIPO DE PAGO SE SELECCIONO*/
+	var patinidpaymenttypeGroup = document.getElementById('patinidpaymenttypeGroup').value;
+	var positionInitial = 0;
+	var positionEnd = 0;
+
+	do
+	{
+		/*OBTENEMOS EL ID SELECCIONADO*/
+		positionEnd = patinidpaymenttypeGroup.indexOf(',',positionInitial);
+		if (positionEnd == -1) { positionEnd = patinidpaymenttypeGroup.length; }
+		var patinidpaymenttype = patinidpaymenttypeGroup.substring(positionInitial,positionEnd);
+		positionInitial = positionEnd + 1;
+
+		/*REVISAR SI HA SELECCIONADO DICHO ITEM*/
+		if (document.getElementById('id' + patinidpaymenttype).checked == true)
+		{
+			document.getElementById('bodyForm:patinidpaymenttype').value = patinidpaymenttype;
+			break;
+		}
+
+		patinidpaymenttype = null;
+	}
+	while (positionInitial <= patinidpaymenttypeGroup.length);
+
+
+	/*REVISAR DATOS OBLIGATORIOS*/
+	if (vcname == null || vcname == "" || vclastname == null || vclastname == "")
+	{
+		var errorname = '';
+		if (vcname == null || vcname == "")
+		{
+			errorname = 'bodyForm:vcname';
+			if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar el nombre." + "<br/>"; } else { messageerror += "First name is required." + "<br/>"; }
+			quantityerror++;
+		}
+
+		if (vclastname == null || vclastname == "")
+		{
+			if (errorname == 'bodyForm:vcname') 				{ errorname = "all"; }
+			else 												{ errorname = 'bodyForm:vclastname'; }
+			if (vcidlanguage != null && vcidlanguage == 'ES') 	{ messageerror += "Debe ingresar el apellido." + "<br/>"; } else { messageerror += "Last name is required." + "<br/>"; }
+			quantityerror++;
+		}
+
+		setErrorStyle2('vcnameall', 'bodyForm:vcname', 'bodyForm:vclastname', errorname);
+	}
+	if (vcemail1 == null || vcemail1 == "")
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar un e-mail." + "<br/>"; } else { messageerror += "Email is required." + "<br/>"; }
+		setErrorStyle('bodyForm:vcemail1');
+		quantityerror++;
+	}
+	if (!(validateEmail(vcemail1)))
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "El e-mail no tiene un formato correcto." + "<br/>"; } else { messageerror += "E-mail doesn't have a correct format." + "<br/>"; }
+		setErrorStyle('bodyForm:vcemail1');
+		quantityerror++;
+	}
+	/*A solicitud de JD, el e-mail alternativo no es obligatorio*/
+	/*if (vcemail2 == null || vcemail2 == "")*/
+	/*{*/
+	/*	if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar un e-mail alternativo." + "<br/>"; } else { messageerror += "Alternative Email is required." + "<br/>"; }*/
+	/*	setErrorStyle('bodyForm:vcemail2');*/
+	/*	quantityerror++;*/
+	/*}*/
+	/*A solicitud de JD, el e-mail alternativo no es obligatorio, por lo que se puso esta siguiente linea*/
+	if (vcemail2 != null && vcemail2 != "")
+	{
+		if (!(validateEmail(vcemail2)))
+		{
+			if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "El e-mail alternativo no tiene un formato correcto." + "<br/>"; } else { messageerror += "Alternative E-mail doesn't have a correct format." + "<br/>"; }
+			setErrorStyle('bodyForm:vcemail2');
+			quantityerror++;
+		}
+	}
+	if (indexinsex == null || indexinsex == 0)
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe seleccionar un sexo." + "<br/>"; } else { messageerror += "Sex is required." + "<br/>"; }
+		setErrorStyle3('bodyForm:insex', '100px');
+		quantityerror++;
+	}
+	if (indexinage == null || indexinage == 0)
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe seleccionar una edad." + "<br/>"; } else { messageerror += "Age is required." + "<br/>"; }
+		setErrorStyle3('bodyForm:inage', '100px');
+		quantityerror++;
+	}
+	if (indexiniddoctype == null || indexiniddoctype == 0)
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe seleccionar un tipo de documento." + "<br/>"; } else { messageerror += "Type of document is required." + "<br/>"; }
+		setErrorStyle3('bodyForm:iniddoctype', '100px');
+		quantityerror++;
+	}
+	if (vcdocnum == null || vcdocnum == "")
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar un n&#250;mero de documento." + "<br/>"; } else { messageerror += "Number of document is required." + "<br/>"; }
+		setErrorStyle('bodyForm:vcdocnum');
+		quantityerror++;
+	}
+	if (vcphone1 == null || vcphone1 == "")
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar un n&#250;mero de tel&#233;fono." + "<br/>"; } else { messageerror += "Number of phone is required." + "<br/>"; }
+		setErrorStyle('bodyForm:vcphone1');
+		quantityerror++;
+	}
+	if (indexinidlocationbillingcountry == null || indexinidlocationbillingcountry == 0)
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe seleccionar un pa&#237;s." + "<br/>"; } else { messageerror += "Country is requiered." + "<br/>"; }
+		setErrorStyle3('bodyForm:inidlocationbillingcountry', '147px');
+		quantityerror++;
+	}
+	if (vcbillingstate == null || vcbillingstate == "")
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar un estado." + "<br/>"; } else { messageerror += "State is required." + "<br/>"; }
+		setErrorStyleHidden(valueinidlocationbillingcountry, inidlocationp);
+		quantityerror++;
+	}
+	if (vcbillingcity == null || vcbillingcity == "")
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar una ciudad." + "<br/>"; } else { messageerror += "City is required." + "<br/>"; }
+		setErrorStyle('bodyForm:vcbillingcity');
+		quantityerror++;
+	}
+	if (vcbillingaddress == null || vcbillingaddress == "")
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar una direcci&#243;n." + "<br/>"; } else { messageerror += "Address is required." + "<br/>"; }
+		setErrorStyle('bodyForm:vcbillingaddress');
+		quantityerror++;
+	}
+	if (vcbillingzipcode == null || vcbillingzipcode == "")
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar un c&#243;digo postal." + "<br/>"; } else { messageerror += "Zip code is required." + "<br/>"; }
+		setErrorStyle('bodyForm:vcbillingzipcode');
+		quantityerror++;
+	}
+	if (patinidpaymenttype == null || patinidpaymenttype == "")
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe seleccionar un tipo de pago."; } else { messageerror += "Type of payment is required."; }
+		removeStyle('errormessagecard');
+		quantityerror++;
+	}
+	if (patinidpaymenttype != null && parseInt(patinidpaymenttype) == 11 && amounttotal != null && parseFloat(amounttotal) > 10000.00)
+	{	/*SI EL PAGO ES PAYPAL y EL MONTO DEL PEDIDO PASA DE 10,000.00*/
+		if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Para pagar con Paypal, el monto del pedido no debe exceder de $ 10,000.00"; } else { messageerror += "To pay with Paypal, the amount of order must not exceed $ 10,000.00"; }
+		quantityerror++;
+	}
+
+	if (messageerror.length > 1)
+	{
+		if (quantityerror < 5)
+		{
+			showMessage(((vcidlanguage != null && vcidlanguage == 'ES') ? 'Mensaje' : 'Message'), messageerror);
+		}
+		else
+		{
+			messageerror = ((vcidlanguage != null && vcidlanguage == 'ES') ? 'Debe completar los datos solicitados.' : 'You must complete the information requested.');
+			showMessage(((vcidlanguage != null && vcidlanguage == 'ES') ? 'Mensaje' : 'Message'), messageerror);
+		}
+		return;
+	}
+
+	
+	$.msgBox({
+		title: getMessage('title', vcidlanguage),
+		content: getMessage('gotopayment', vcidlanguage),
+		type: "info",
+		opacity: 0.7,
+		buttons: [{ value: "OK" }],
+		success: function (result) 
+				 {
+					if (result == "OK") 
+					{
+						document.getElementById('bodyForm:linkRegisterCardHolderAndPaymentType').click();
+					}
+				 }
+		});
+}
+
+function showStates(inidlocation, inidlocationp)
+{
+	if (inidlocation == inidlocationp)
+	{	/*COMBO*/
+		document.getElementById('bodyForm:vcbillingstate2').removeAttribute('style');
+		document.getElementById('bodyForm:vcbillingstate2').value = '0'; /*COMBO*/
+		document.getElementById('bodyForm:vcbillingstate1').setAttribute('style','border:0; display:none; visibility:hidden;');
+		/*document.getElementById('bodyForm:vcbillingstate2').focus();*/
+	}
+	else
+	{	/*CAJA DE TEXTO*/
+		document.getElementById('bodyForm:vcbillingstate1').removeAttribute('style');
+		document.getElementById('bodyForm:vcbillingstate1').value = '';	/*CAJA DE TEXTO*/
+		document.getElementById('bodyForm:vcbillingstate2').setAttribute('style','border:0; display:none; visibility:hidden;');
+		/*document.getElementById('bodyForm:vcbillingstate1').focus();*/
+	}
+}
+
+function afterClick(inidlocation, inidlocationp)
+{
+	if (inidlocation == inidlocationp)
+	{	/*COMBO*/
+		document.getElementById('bodyForm:vcbillingstate2').focus();
+	}
+	else
+	{	/*CAJA DE TEXTO*/
+		document.getElementById('bodyForm:vcbillingstate1').focus();
+	}
+}
+
+function registerPassenger(vcidlanguage)
+{
+	var sizealistbeanpassengerGroup = document.getElementById('sizealistbeanpassengerGroup').value;
+	var positionInitial = 0;
+	var positionEnd = 0;
+	var messageerror = "";
+	var quantityerror = 0;
+	var quantityerror1 = 0;
+	var quantityerror2 = 0;
+	var quantityerror3 = 0;
+	var quantityerror4 = 0;
+	var quantityerror5 = 0;
+	var quantityerror6 = 0;
+	var quantityerror7 = 0;
+
+	var i=0;
+	do
+	{
+		/*OBTENEMOS EL ID SELECCIONADO*/
+		positionEnd = sizealistbeanpassengerGroup.indexOf(',',positionInitial);
+		if (positionEnd == -1) { positionEnd = sizealistbeanpassengerGroup.length; }
+		var sizealistbeanpassenger = sizealistbeanpassengerGroup.substring(positionInitial,positionEnd);
+		positionInitial = positionEnd + 1;
+
+		var size = parseInt(sizealistbeanpassenger);
+
+		if (size != null && size > 0)
+		{
+			for (var j=0; j<size; j++)
+			{
+				removeStyle('bodyForm:data1:' + i + ':data2:' + j + ':vcname');
+				removeStyle('bodyForm:data1:' + i + ':data2:' + j + ':vclastname');
+				removeStyle3('bodyForm:data1:' + i + ':data2:' + j + ':insex', '90px;');
+				/*removeStyle3('bodyForm:data1:' + i + ':data2:' + j + ':inage', '113px;');*/
+				removeStyle('bodyForm:data1:' + i + ':data2:' + j + ':vcdatebirth');
+				removeStyle3('bodyForm:data1:' + i + ':data2:' + j + ':iniddoctype', '90px;');
+				removeStyle('bodyForm:data1:' + i + ':data2:' + j + ':vcdocnum');
+				removeStyle3('bodyForm:data1:' + i + ':data2:' + j + ':inidlocationcountry', '142px;');
+
+				var vcname = document.getElementById('bodyForm:data1:' + i + ':data2:' + j + ':vcname').value;
+				var vclastname = document.getElementById('bodyForm:data1:' + i + ':data2:' + j + ':vclastname').value;
+				var indexinsex = document.getElementById('bodyForm:data1:' + i + ':data2:' + j + ':insex').options.selectedIndex;
+				/*var indexinage = document.getElementById('bodyForm:data1:' + i + ':data2:' + j + ':inage').options.selectedIndex;*/
+				var vcdatebirth = document.getElementById('bodyForm:data1:' + i + ':data2:' + j + ':vcdatebirth').value;
+				var indexiniddoctype = document.getElementById('bodyForm:data1:' + i + ':data2:' + j + ':iniddoctype').options.selectedIndex;
+				var vcdocnum = document.getElementById('bodyForm:data1:' + i + ':data2:' + j + ':vcdocnum').value;
+				var indexinidlocationcountry = document.getElementById('bodyForm:data1:' + i + ':data2:' + j + ':inidlocationcountry').options.selectedIndex;
+
+				if (vcname == null || vcname == "")
+				{
+					if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar un nombre." + "<br/>"; } else { messageerror += "Name is required." + "<br/>"; }
+					setErrorStyle('bodyForm:data1:' + i + ':data2:' + j + ':vcname');
+					quantityerror++;
+					quantityerror1++;
+				}
+				if (vclastname == null || vclastname == "")
+				{
+					if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar un apellido." + "<br/>"; } else { messageerror += "Last Name is required." + "<br/>"; }
+					setErrorStyle('bodyForm:data1:' + i + ':data2:' + j + ':vclastname');
+					quantityerror++;
+					quantityerror2++;
+				}
+				if (indexinsex == null || indexinsex == 0)
+				{
+					if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe seleccionar un sexo." + "<br/>"; } else { messageerror += "Gender is required." + "<br/>"; }
+					setErrorStyle3('bodyForm:data1:' + i + ':data2:' + j + ':insex', '90px;');
+					quantityerror++;
+					quantityerror3++;
+				}
+				/*if (indexinage == null || indexinage == 0)*/
+				/*{*/
+				/*	if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe seleccionar una edad." + "<br/>"; } else { messageerror += "Age is required." + "<br/>"; }*/
+				/*	setErrorStyle3('bodyForm:data1:' + i + ':data2:' + j + ':inage', '113px;');*/
+				/*	quantityerror++;*/
+				/*	quantityerror4++;*/
+				/*}*/
+				if (vcdatebirth == null || vcdatebirth == "")
+				{
+					if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar una fecha de nacimiento." + "<br/>"; } else { messageerror += "Date of Birth is required." + "<br/>"; }
+					setErrorStyle('bodyForm:data1:' + i + ':data2:' + j + ':vcdatebirth');
+					quantityerror++;
+					quantityerror4++;
+				}
+				if (indexiniddoctype == null || indexiniddoctype == 0)
+				{
+					if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe seleccionar un tipo de documento." + "<br/>"; } else { messageerror += "Type of Document is required." + "<br/>"; }
+					setErrorStyle3('bodyForm:data1:' + i + ':data2:' + j + ':iniddoctype', '90px;');
+					quantityerror++;
+					quantityerror5++;
+				}
+				if (vcdocnum == null || vcdocnum == "")
+				{
+					if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe ingresar un n&#250;mero de documento." + "<br/>"; } else { messageerror += "Number of Document is required." + "<br/>"; }
+					setErrorStyle('bodyForm:data1:' + i + ':data2:' + j + ':vcdocnum');
+					quantityerror++;
+					quantityerror6++;
+				}
+				if (indexinidlocationcountry == null || indexinidlocationcountry == 0)
+				{
+					if (vcidlanguage != null && vcidlanguage == 'ES') { messageerror += "Debe seleccionar una nacionalidad."; } else { messageerror += "Nationality is required."; }
+					setErrorStyle3('bodyForm:data1:' + i + ':data2:' + j + ':inidlocationcountry', '142px;');
+					quantityerror++;
+					quantityerror7++;
+				}
+			}
+		}
+
+		i=i+1;
+	}
+	while (positionInitial <= sizealistbeanpassengerGroup.length);
+
+
+	if (messageerror.length > 1)
+	{
+		if (quantityerror > 4 ||
+			quantityerror1 > 1 || quantityerror2 > 1 || quantityerror3 > 1 || quantityerror4 > 1 || quantityerror5 > 1 || quantityerror6 > 1 || quantityerror7 > 1)
+		{
+			messageerror = ((vcidlanguage != null && vcidlanguage == 'ES') ? 'Debe completar los datos solicitados.' : 'You must complete the information requested.');
+			showMessage(((vcidlanguage != null && vcidlanguage == 'ES') ? 'Mensaje' : 'Message'), messageerror);
+		}
+		else
+		{
+			showMessage(((vcidlanguage != null && vcidlanguage == 'ES') ? 'Mensaje' : 'Message'), messageerror);
+		}
+		return;
+	}
+
+
+	document.getElementById('bodyForm:linkRegisterPassenger').click();
+}
+
+function showMessage(title, message)
+{
+		$.msgBox({
+			title: title,
+			content: message,
+			opacity: 0.7
+			});
+}
+
+function removeStyle(name)
+{
+	var object = document.getElementById(name);
+
+	if (object.getAttribute('readonly') == 'readonly')
+	{
+		object.removeAttribute('style');
+		object.setAttribute('readonly', 'readonly');
+		object.setAttribute('style','border:0; background-color:transparent;');
+	}
+	else
+	{
+		object.removeAttribute('style');
+	}
+}
+
+function removeStyle2(nameall, name1, name2)
+{
+	var object0 = document.getElementById(nameall);
+	var object1 = document.getElementById(name1);
+	var object2 = document.getElementById(name2);
+
+	/*if (object0.getAttribute('style') == 'border:0; display:none; visibility:hidden;') en IE no funciona*/
+	if(object1.getAttribute('readonly') == 'readonly' || object2.getAttribute('readonly') == 'readonly')
+	{
+		/*EN ESTE CASO ES: NO EDIT*/
+		object0.value = object1.value + " " + object2.value;
+		object0.setAttribute('style', 'border:0; background-color:transparent;');
+		object0.setAttribute('size', object0.length);
+
+		object1.setAttribute('readonly', 'readonly');
+		object1.setAttribute('style','border:0; display:none; visibility:hidden;');
+		object1.removeAttribute('size');
+
+		object2.setAttribute('readonly', 'readonly');
+		object2.setAttribute('style','border:0; display:none; visibility:hidden;');
+		object2.removeAttribute('size');
+	}
+	else
+	{
+		/*EN ESTE CASO ES: EDIT*/
+		object0.setAttribute('style', 'border:0; display:none; visibility:hidden;');
+
+		object1.removeAttribute('style');
+		object1.removeAttribute('readonly');
+		object1.setAttribute('size', object1.length);
+
+		object2.removeAttribute('style');
+		object2.removeAttribute('readonly');
+		object2.setAttribute('size', object2.length);
+	}
+}
+
+function removeStyle3(name, width)
+{
+	var object = document.getElementById(name);
+
+	if (object.getAttribute('readonly') == 'readonly')
+	{
+		object.removeAttribute('style');
+		object.setAttribute('readonly', 'readonly');
+		object.setAttribute('style','border:0; width:' + width + ';');
+	}
+	else
+	{
+		object.removeAttribute('style');
+		object.setAttribute('style','width:' + width);
+	}
+}
+
+function setErrorStyle(name)
+{
+	var object = document.getElementById(name);
+
+	if (object.getAttribute('readonly') == 'readonly')
+	{
+		object.removeAttribute('readonly');
+
+	}
+
+	object.removeAttribute('style');
+	object.setAttribute('style','background-color:#FBBDB4;');
+}
+
+function setErrorStyle2(nameall, name1, name2, errorname)
+{
+	var object0 = document.getElementById(nameall);
+	var object1 = document.getElementById(name1);
+	var object2 = document.getElementById(name2);
+
+	/*if (object0.getAttribute('style') == 'border:0; background-color:transparent;') no funcion en IE*/
+	if(object1.getAttribute('readonly') == 'readonly' || object2.getAttribute('readonly') == 'readonly')
+	{
+		/*EDIT*/
+		object0.setAttribute('style', 'border:0; display:none; visibility:hidden;');
+
+		object1.removeAttribute('style');
+		object1.removeAttribute('readonly');
+
+		object2.removeAttribute('style');
+		object2.removeAttribute('readonly');
+	}
+
+	if (errorname == name1) 		{ object1.setAttribute('style','background-color:#FBBDB4;'); }
+	else if (errorname == name2) 	{ object2.setAttribute('style','background-color:#FBBDB4;'); }
+	else 			 				{ object1.setAttribute('style','background-color:#FBBDB4;'); object2.setAttribute('style','background-color:#FBBDB4;');}
+}
+
+function setErrorStyle3(name, width)
+{
+	var object = document.getElementById(name);
+
+	if (object.getAttribute('readonly') == 'readonly')
+	{
+		object.removeAttribute('readonly');
+
+	}
+
+	object.removeAttribute('style');
+	object.setAttribute('style','width:' + width + '; background-color:#FBBDB4;');
+}
+
+function removeStyleHidden(inidlocation, inidlocationp)
+{
+	if (inidlocation == inidlocationp)
+	{	/*COMBO*/
+		document.getElementById('bodyForm:vcbillingstate2').removeAttribute('style');
+		document.getElementById('bodyForm:vcbillingstate1').setAttribute('style','border:0; display:none; visibility:hidden;');
+	}
+	else
+	{	/*CAJA DE TEXTO*/
+		document.getElementById('bodyForm:vcbillingstate1').removeAttribute('style');
+		document.getElementById('bodyForm:vcbillingstate2').setAttribute('style','border:0; display:none; visibility:hidden;');
+	}
+}
+
+function setErrorStyleHidden(inidlocation, inidlocationp)
+{
+	if (inidlocation == inidlocationp)
+	{	/*COMBO*/
+		document.getElementById('bodyForm:vcbillingstate2').removeAttribute('style');
+		document.getElementById('bodyForm:vcbillingstate2').setAttribute('style','background-color:#FBBDB4;');
+		document.getElementById('bodyForm:vcbillingstate1').setAttribute('style','border:0; display:none; visibility:hidden;');
+	}
+	else
+	{	/*CAJA DE TEXTO*/
+		document.getElementById('bodyForm:vcbillingstate1').removeAttribute('style');
+		document.getElementById('bodyForm:vcbillingstate1').setAttribute('style','background-color:#FBBDB4;');
+		document.getElementById('bodyForm:vcbillingstate2').setAttribute('style','border:0; display:none; visibility:hidden;');
+	}
+}
+
+function showTab(tab)
+{
+ 	var url = document.URL + tab;
+ 	return url;
+}
+
+function showDetail(namewindow, srcframe)
+{
+	/*Se comento esta linea porque nunca se lee*/
+	/*var src1 = document.getElementById('idframe').contentWindow.location.href;*/
+	return namewindow;
+}
+
+function printPage()
+{
+  window.print();
+}
+
+function afterEnterGoto(event, id)
+{
+    if (event.which == 13 || event.keyCode == 13)
+    {
+    	if (id != null || id != '') { document.getElementById(id).focus(); }
+        return false;
+    }
+}
+
+function validateEmail(email)
+{
+	var mailFormatServer = /^[-A-Za-z0-9~\!$%^&*_\=+}{'?]+(.[-A-Za-z0-9~\!$%^&*_\=+}{'?]+)*@([a-z0-9_]+(.[-a-z0-9_]+)*.(aero|arpa|biz|com|COM|coop|edu|gov|info|int|mil|museum|name|net|org|pro|[A-Za-z][A-Za-z])|([0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}))(\:[0-9]{1,5})?$/g;
+	var mailMask = /^[A-Za-z0-9.@-_]*$/g;
+
+		if(mailFormatServer.test(email) && mailMask.test(email))
+		{
+			/*var arrobas = new StringTokenizer(email, "@");*/
+			var arrobas = email.split("@");
+
+			if(arrobas.length != 2)
+			{
+				return false;
+			}
+			else
+			{
+				var antesArroba = arrobas[0];
+				var inicio = antesArroba.substring(0, 1);
+				var fin    = antesArroba.substring((antesArroba.length - 1), antesArroba.length);
+
+				if(inicio == "-" || inicio == "_" || fin == "-" || fin == "_")
+				{
+					return false;
+				}
+				else
+				{
+					var despuesArroba = arrobas[1];
+					var puntos = despuesArroba.split(".");
+
+					if(puntos.length < 2)
+					{
+						return false;
+					}
+					else
+					{
+						for (var i = 0; i < puntos.length; i++)
+						{
+							var valor = puntos[i];
+							inicio = valor.substring(0, 1);
+							fin    = valor.substring((valor.length - 1), valor.length);
+
+							if(inicio == "-" || inicio == "_" || fin == "-" || fin == "_")
+							{
+								return false;
+							}
+						}
+					}
+				}
+			}
+
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+
+		return true;
+}
+
+function clickLinklogo()
+{
+	document.getElementById('linklogo').click();
+}
+
+/*ESTAS FUNCIONES DE ABAJO SE PONEN PARA SOPORTAR JSF 2.2.15*/
+/*CANAL G2P*/
+
+function random_imglink(image1, linkimage1, image2, linkimage2, image3, linkimage3)
+{
+  var myimages=new Array();
+  /*specify random images below. You can have as many as you wish*/
+  myimages[1]=image1;
+  myimages[2]=image2;
+  myimages[3]=image3;
+
+  /*specify corresponding links below*/
+  var imagelinks=new Array();
+  imagelinks[1]=linkimage1;
+  imagelinks[2]=linkimage2;
+  imagelinks[3]=linkimage3;
+
+  var ry=Math.floor(Math.random()*myimages.length);
+
+  if (ry==0)
+     ry=1;
+  	 document.write('<a href='+'"'+imagelinks[ry]+'"'+'><img src="'+myimages[ry]+'" border=0></a>');
+}
+
+function random_img(image1, image2, image3)
+{
+  var myimages=new Array();
+  /*specify random images below. You can have as many as you wish*/
+  myimages[1]=image1;
+  myimages[2]=image2;
+  myimages[3]=image3;
+
+  var ry=Math.floor(Math.random()*myimages.length);
+
+  if (ry==0)
+     ry=1;
+     document.write('<img src="'+myimages[ry]+'" border=0>');
+}
+
+function bestdealsTR(proinidproduct, ltglanvcname, provcimage2, comvcnamecorporate, provclogo2, curvcsymbol, prschavcamount2, lorlanvcname, ltglanvcname, prschreturn, textOneway, textRoundtrip)
+{
+		var countRow = parseInt(document.getElementById('countRow').value);
+
+		if (countRow == 1 || (((countRow - 1) % 3) == 0))
+		{
+		    document.write('<tr>');				   
+		}
+
+	    	document.write('<td>');
+		if (countRow % 3 == 0)
+		{
+		    document.write('<div class="bestDealsImagesPrinc" style="border-right:none;">');				   
+		}
+		else
+		{
+		    document.write('<div class="bestDealsImagesPrinc">');
+		}
+		    
+		document.write('<div class="bestDealsImages">');
+		document.write('<div class="bestD_image">');
+		document.write('<a href="javascript:searchBestDeals(' + proinidproduct + ')" ondblclick="javascript: return dblclick();" title="' + ltglanvcname + '"><img src="' + provcimage2 + '" title="' + ltglanvcname + '" alt="' + ltglanvcname + '" longdesc="' + ltglanvcname + '" width="150" height="100" border="0" /></a>');
+		document.write('<div class="bestD_destino">' + ltglanvcname + '</div>');
+		document.write('</div>'); 
+		document.write('<div class="bestD_descripcion">');
+		document.write('<div>');
+		document.write('<a href="javascript:searchBestDeals(' + proinidproduct + ')" ondblclick="javascript: return dblclick();" title="' + comvcnamecorporate + '"><img src="' + provclogo2 + '" title="' + comvcnamecorporate + '" alt="' + comvcnamecorporate + '" longdesc="' + comvcnamecorporate + '" width="98" height="20" border="0" /></a>');
+		document.write('</div>');
+		document.write('<div class="buses_precio" >' + curvcsymbol + '&#160;' + prschavcamount2 + '</div>');
+		document.write('<div class="buses_desc2" >' + lorlanvcname + '&#160;-&#160;' + ltglanvcname + '<br/>');
+		document.write('<span>');
+		
+		if (prschreturn == '0')
+		{
+			document.write('&#160;' + textOneway);
+		}              
+		else if (prschreturn == '1')
+		{
+			document.write('&#160;' + textRoundtrip);
+		}
+		
+		document.write('</span>');
+		document.write('</div>');
+		document.write('</div>');          
+		document.write('</div>'); 
+		document.write('</div>');
+	    document.write('</td>');
+
+    
+		if (countRow % 3 == 0)
+		{
+			document.write('</tr>');
+		    document.write('<tr>');
+			document.write('<td>&#160;</td>');
+			document.write('<td>&#160;</td>');
+			document.write('<td>&#160;</td>');
+		    document.write('</tr>');
+		}
+		
+		countRow = countRow + 1;
+		document.getElementById('countRow').value = countRow;		    
+}
+
+function bestdealsTRFinal()
+{
+	var countRow = parseInt(document.getElementById('countRow').value);	
+	countRow = countRow - 1;
+	
+	if (countRow % 3 == 1)
+	{	/*SI RESIDUO == 1 FUE PORQUE 1(COUNTROW)/3 => 10/3 ==> r=1*/ 
+	    document.write('<td><img src="images_new/spacer.gif" width="150" height="100" /></td>');
+	    document.write('<td><img src="images_new/spacer.gif" width="150" height="100" /></td>');
+	    document.write('</tr>');
+	    document.write('<tr>');
+		    document.write('<td>&#160;</td>');
+		    document.write('<td>&#160;</td>');
+		    document.write('<td>&#160;</td>');
+	    document.write('</tr>');
+	}
+	else if (countRow % 3 == 2)
+	{	/*SI RESIDUO == 2 FUE PORQUE 2(COUNTROW)/3 => 20/3 ==> r=2*/
+	    document.write('<td><img src="images_new/spacer.gif" width="150" height="100" /></td>');
+	    document.write('</tr>');
+	    document.write('<tr>');
+		    document.write('<td>&#160;</td>');
+		    document.write('<td>&#160;</td>');
+		    document.write('<td>&#160;</td>');
+	    document.write('</tr>');
+	}				
+}
+
+function hotelActiveCheckedTypeSearch(typesearch)
+{
+	if (typesearch == '2')
+	{
+		/*BUSQUEDA POR NOMBRE*/
+		document.getElementById('typesearch1').checked = false;
+		document.getElementById('typesearch2').checked = true;
+	}
+	else
+	{
+		/*BUSQUEDA POR DESTINO*/
+		document.getElementById('typesearch1').checked = true;
+		document.getElementById('typesearch2').checked = false;
+	}
+}
+
+function ticketCountRowAssignOne() 
+{
+	document.getElementById('countRow').value = '1';
+}
+
+function ticketActiveCheckedReturnproductsub(returnproductsub)
+{
+	if (returnproductsub == '1')
+	{
+		/*BUSQUEDA POR ROUND TRIP*/
+		document.getElementById('returnproductsub1').checked = false;
+		document.getElementById('returnproductsub2').checked = true;
+	}
+	else
+	{
+		/*BUSQUEDA POR ONE WAY*/
+		document.getElementById('returnproductsub1').checked = true;
+		document.getElementById('returnproductsub2').checked = false;
+	}
+}
+/*G2P y EXT*/
+function productShowLinkTab(tabNumber, tabMessage)
+{
+	document.write("<a href='" + showTab(tabNumber) + "'>" + tabMessage + "</a>");
+}
+/*G2P y EXT*/
+function productCleanPrsinidproductsubGroup()
+{
+    document.getElementById('prsinidproductsubGroup').value = '';
+}
+/*G2P y EXT*/
+function productAddPrsinidproductsubGroup(prsinidproductsub)
+{
+    var prsinidproductsubGroup = document.getElementById('prsinidproductsubGroup').value;
+
+    if (prsinidproductsubGroup != null && prsinidproductsubGroup != "")
+    {
+    	prsinidproductsubGroup = prsinidproductsubGroup + ',';
+    }
+    
+    prsinidproductsubGroup = prsinidproductsubGroup + prsinidproductsub;
+    document.getElementById('prsinidproductsubGroup').value = prsinidproductsubGroup;
+}
+/*G2P y EXT*/
+function productReservationInitializeValues()
+{
+	document.getElementById('prsinidproductsubGroup').value = '';
+	document.getElementById('idrowprsinidproductsubGroup').value = '';
+	document.getElementById('countRow').value = '1';	
+	ocultarTD('message');
+}
+/*G2P y EXT*/
+function productReservationCalendar(idrow, prsinidproductsub, calendardatebegin, calendardateend, prtvcgroup, prschreturn)
+{
+      /*idrow*/
+      Calendar.setup({
+        inputField : "registryfrom" + idrow + prsinidproductsub,
+        trigger    : "imgregistryfrom" + idrow + prsinidproductsub,
+        onSelect   : function() { this.hide(); verifyDateNewVersion(1); getSubTotalNewVersion(); } ,
+        dateFormat : "%d/%m/%Y",
+        align	   : "Br",
+        min	       : Calendar.intToDate(calendardatebegin),
+        max	       : Calendar.intToDate(calendardateend)
+      });
+
+     if (prtvcgroup == '1' || (prtvcgroup == '3' && prschreturn == '1'))
+     {
+     	Calendar.setup({
+          inputField : "registryto" + idrow + prsinidproductsub,
+          trigger    : "imgregistryto" + idrow + prsinidproductsub,
+          onSelect   : function() { this.hide(); verifyDateNewVersion(2); getSubTotalNewVersion(); },
+          dateFormat : "%d/%m/%Y",
+          align	     : "Br",
+          min	     : Calendar.intToDate(calendardatebegin),
+          max	     : Calendar.intToDate(calendardateend)
+       });
+    }
+
+    document.getElementById('import' + idrow + prsinidproductsub).value = '0.00';				    
+    
+
+    var prsinidproductsubGroup = document.getElementById('prsinidproductsubGroup').value;
+    if (prsinidproductsubGroup != null && prsinidproductsubGroup != "")
+    {
+    	prsinidproductsubGroup = prsinidproductsubGroup + ',';
+    }
+    prsinidproductsubGroup = prsinidproductsubGroup + prsinidproductsub;
+    document.getElementById('prsinidproductsubGroup').value = prsinidproductsubGroup; 
+
+    var idrowprsinidproductsubGroup = document.getElementById('idrowprsinidproductsubGroup').value;
+    if (idrowprsinidproductsubGroup != null && idrowprsinidproductsubGroup != "")
+    {
+    	idrowprsinidproductsubGroup = idrowprsinidproductsubGroup + ',';
+    }
+    idrowprsinidproductsubGroup = idrowprsinidproductsubGroup + idrow + prsinidproductsub;				    
+    document.getElementById('idrowprsinidproductsubGroup').value = idrowprsinidproductsubGroup;
+}
+/*G2P y EXT*/
+function cartCleanVariables()
+{
+	document.getElementById('idGroup').value = '';
+	document.getElementById('inidproductGroup').value = '';
+	document.getElementById('prsinidproductsubGroup').value = ''; /*AVERIGUAR SI SE BORRA ESTE O NO*/
+	document.getElementById('idrowprsinidproductsubGroup').value = '';
+	document.getElementById('countRow').value = '1';
+}
+/*G2P y EXT*/
+function cartAddIdGroup(idcarrito)
+{
+	var idGroup = document.getElementById('idGroup').value;
+	
+	if (idGroup != null && idGroup != "")
+	{
+		idGroup = idGroup + ',';
+	}
+	
+	idGroup = idGroup + idcarrito;
+	document.getElementById('idGroup').value = idGroup; 
+}
+/*G2P y EXT*/
+function cartAddInidproductGroup(inidproduct)
+{
+    var inidproductGroup = document.getElementById('inidproductGroup').value;
+    
+    if (inidproductGroup != null && inidproductGroup != "")
+    {
+    	inidproductGroup = inidproductGroup + ',';
+    }
+    
+    inidproductGroup = inidproductGroup + inidproduct;
+    document.getElementById('inidproductGroup').value = inidproductGroup; 
+}
+/*G2P y EXT*/
+function cartCalendar(idcarrito, inidproductsub, dtdateformat2,  dtdateformatbegin2, dtdateformatend2, calendardatebegin, calendardateend, vcgroup, chreturn, inpassengers)
+{
+	/*idcarrito*/
+	/*dateFormat : "%d/%m/%Y", "%b/%d/%Y"*/
+      Calendar.setup({
+        inputField : "registryfrom" + idcarrito + inidproductsub,
+        trigger    : "imgregistryfrom" + idcarrito + inidproductsub,
+        onSelect   : function() { this.hide(); cartverifyDateNewVersion(1); cartgetSubTotalNewVersion(); } ,
+        dateFormat : dtdateformat2,
+        align	   : "Br",
+        min		   : Calendar.intToDate(calendardatebegin),
+        max		   : Calendar.intToDate(calendardateend)
+      });
+      document.getElementById('registryfrom' + idcarrito + inidproductsub).value = dtdateformatbegin2;
+
+
+	if (vcgroup == '1' || (vcgroup == '3' && chreturn == '1'))
+	{
+      Calendar.setup({
+        inputField : "registryto" + idcarrito + inidproductsub,
+        trigger    : "imgregistryto" + idcarrito + inidproductsub,
+        onSelect   : function() { this.hide(); cartverifyDateNewVersion(2); cartgetSubTotalNewVersion(); },
+        dateFormat : dtdateformat2,
+        align	   : "Br",
+        min		   : Calendar.intToDate(calendardatebegin),
+        max		   : Calendar.intToDate(calendardateend)
+      });
+      document.getElementById('registryto' + idcarrito + inidproductsub).value = dtdateformatend2;
+    }
+    
+	document.getElementById('pax' + idcarrito + inidproductsub).value = inpassengers;
+
+
+	/*PARA SABER QUE SUBPRODUCTOS HAY*/
+    var prsinidproductsubGroup = document.getElementById('prsinidproductsubGroup').value;
+    if (prsinidproductsubGroup != null && prsinidproductsubGroup != "")
+    {
+    	prsinidproductsubGroup = prsinidproductsubGroup + ',';
+    }
+    prsinidproductsubGroup = prsinidproductsubGroup + inidproductsub;
+    document.getElementById('prsinidproductsubGroup').value = prsinidproductsubGroup; 
+
+    
+	/*PARA SABER DEL ID DE CARRITO QUE HAY CON SUBPRODUCTO*/
+    var idrowprsinidproductsubGroup = document.getElementById('idrowprsinidproductsubGroup').value;
+    if (idrowprsinidproductsubGroup != null && idrowprsinidproductsubGroup != "")
+    {
+    	idrowprsinidproductsubGroup = idrowprsinidproductsubGroup + ',';
+    }
+    idrowprsinidproductsubGroup = idrowprsinidproductsubGroup + idcarrito + inidproductsub;				    
+    document.getElementById('idrowprsinidproductsubGroup').value = idrowprsinidproductsubGroup;
+}
+/*G2P y EXT*/
+function cardholderPreparePaymenttypeStatesEEUU(inidlocationbillingcountry, inidlocationEEUU, vcbillingstate)
+{
+	/*TIPO DE PAGO*/
+    document.getElementById('patinidpaymenttypeGroup').value = '';
+
+	/*MOSTRAR ESTADOS DE EEUU*/				    
+	showStates(inidlocationbillingcountry, inidlocationEEUU);
+        			
+	if (inidlocationbillingcountry == inidlocationEEUU)
+	{	/*COMBO*/
+		document.getElementById('bodyForm:vcbillingstate2').value = vcbillingstate;	/*COMBO*/
+		document.getElementById('bodyForm:vcbillingstate1').value = '';	/*TEXTO*/
+	}
+	else
+	{	/*TEXTO*/
+		document.getElementById('bodyForm:vcbillingstate2').value = '0';/*COMBO*/
+		document.getElementById('bodyForm:vcbillingstate1').value = vcbillingstate;	/*TEXTO*/
+	}
+}
+/*G2P, EXT y OMS*/
+function cardholderAddPatinidpaymenttypeGroup(patinidpaymenttype)
+{
+    var patinidpaymenttypeGroup = document.getElementById('patinidpaymenttypeGroup').value;
+    
+    if (patinidpaymenttypeGroup != null && patinidpaymenttypeGroup != "")
+    {
+    	patinidpaymenttypeGroup = patinidpaymenttypeGroup + ',';
+    }
+    
+    patinidpaymenttypeGroup = patinidpaymenttypeGroup + patinidpaymenttype;
+    document.getElementById('patinidpaymenttypeGroup').value = patinidpaymenttypeGroup; 	
+}
+/*G2P, EXT y OMS*/
+function paymenttypePatinidpaymenttypeGroup()
+{
+	document.getElementById('patinidpaymenttypeGroup').value = '';
+}
+/*G2P y EXT*/
+function passengerCleanSizealistbeanpassengerGroup()
+{
+	document.getElementById('sizealistbeanpassengerGroup').value = '';
+}
+/*G2P y EXT*/
+function passengerAddSizealistbeanpassengerGroup(sizeAlistBeanPassenger)
+{
+	/*PARA SABER LA CANTIDAD DE PASAJEROS POR CADA ITEM DE CARRITO*/
+    var sizealistbeanpassengerGroup = document.getElementById('sizealistbeanpassengerGroup').value;
+    if (sizealistbeanpassengerGroup != null && sizealistbeanpassengerGroup != "")
+    {
+    	sizealistbeanpassengerGroup = sizealistbeanpassengerGroup + ',';
+    }
+    
+    sizealistbeanpassengerGroup = sizealistbeanpassengerGroup + sizeAlistBeanPassenger;
+    document.getElementById('sizealistbeanpassengerGroup').value = sizealistbeanpassengerGroup;	
+}
+/*G2P y EXT*/
+function passengerCalendar(n, m, i, j, id, numref, calendardatebirthbegin, calendardatebirthend)
+{
+	Calendar.setup({
+	    inputField : "bodyForm:data" + n + ":" + i + ":data" + m + ":" + j + ":vcdatebirth",
+	    trigger    : "imgdatebirth" + id + numref,
+	    onSelect   : function() { this.hide(); },
+	    dateFormat : "%d/%m/%Y",
+	    align	   : "Br",
+	    min		   : Calendar.intToDate(calendardatebirthbegin),
+	    max		   : Calendar.intToDate(calendardatebirthend)						        
+	  });	
+}
+
+/*CANAL EXT*/
+
+function extProductReservationInitializeValues()
+{
+	document.getElementById('prsinidproductsubGroup').value = '';
+	document.getElementById('countRow').value = '1';	
+	document.getElementById('subtotal').value = '0.00';
+}
+
+function extProductReservationCalendar(prsinidproductsub, calendardatebegin, calendardateend, prtvcgroup, prschreturn)
+{
+	ocultarTD('idh' + prsinidproductsub);
+
+	for (var i = 1; i < 4; i++)
+	{	
+		/*i*/
+	      Calendar.setup({
+	        inputField : "registryfrom" + i + prsinidproductsub,
+	        trigger    : "imgregistryfrom" + i + prsinidproductsub,
+	        onSelect   : function() { this.hide(); verifyDate(1); getSubTotal(); } ,
+	        dateFormat : "%d/%m/%Y",
+	        align	   : "Br",
+	        min		   : Calendar.intToDate(calendardatebegin),
+	        max		   : Calendar.intToDate(calendardateend)
+	      });
+	
+		if (prtvcgroup == '1' || (prtvcgroup == '3' && prschreturn == '1'))
+		{
+	      Calendar.setup({
+	        inputField : "registryto" + i + prsinidproductsub,
+	        trigger    : "imgregistryto" + i + prsinidproductsub,
+	        onSelect   : function() { this.hide(); verifyDate(2); getSubTotal(); },
+	        dateFormat : "%d/%m/%Y",
+	        align	   : "Br",
+	        min		   : Calendar.intToDate(calendardatebegin),
+	        max		   : Calendar.intToDate(calendardateend)
+	      });
+	    }
+	    
+		ocultarTD('idd' + i + prsinidproductsub);
+	}
+    
+    var prsinidproductsubGroup = document.getElementById('prsinidproductsubGroup').value;
+    
+    if (prsinidproductsubGroup != null && prsinidproductsubGroup != "")
+    {
+    	prsinidproductsubGroup = prsinidproductsubGroup + ',';
+    }
+    
+    prsinidproductsubGroup = prsinidproductsubGroup + prsinidproductsub;
+    document.getElementById('prsinidproductsubGroup').value = prsinidproductsubGroup; 	
+}
+
+function extCartCleanVariables()
+{
+	document.getElementById('idGroup').value = '';
+	document.getElementById('countRow').value = '1';
+}
+
+function getMessage(type, vcidlanguage)
+{
+	if (type != null && type == 'gotopayment')
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES')
+		{
+			return "Por favor, NO interrumpa el proceso de pago y evite presionar los botones de avance, retroceso o actualización de su navegador.";
+		}
+		else
+		{
+			return "Please, DO NOT interrupt the payment process and avoid pressing your browser's forward, backward or update buttons.";			
+		}
+	}
+	else if (type != null && type == 'title')
+	{
+		if (vcidlanguage != null && vcidlanguage == 'ES')
+		{
+			return "Mensaje";
+		}
+		else
+		{
+			return "Message";			
+		}
+	}
+}
